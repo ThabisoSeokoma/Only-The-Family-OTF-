@@ -14,7 +14,7 @@ const SignupScreen = ({navigation}) => {
 
       {/*this user input is the email. it enable the keyboard to show the '@' logo on it.
         Capitals and autoCorrect have been disabled*/}
-      <UserInput
+      <FormInput
         labelValue={email}
         onChangeText={(userEmail) => setEmail(userEmail)}
         placeholderText="Email"
@@ -25,7 +25,7 @@ const SignupScreen = ({navigation}) => {
       />
 
       {/*this is user input for the password. secureTextEntry allows for the password to be in dots*/}
-      <UserInput
+      <FormInput
         labelValue={password}
         onChangeText={(userPassword) => setPassword(userPassword)}
         placeholderText="Password"
@@ -34,7 +34,7 @@ const SignupScreen = ({navigation}) => {
       />
 
       {/*same as above, just that it is to confirm */}
-      <UserInput
+      <FormInput
         labelValue={confirmPassword}
         onChangeText={(userPassword) => setConfirmPassword(userPassword)}
         placeholderText="Confirm Password"
@@ -43,9 +43,9 @@ const SignupScreen = ({navigation}) => {
       />
 
       {/*the button to press when logging in*/}
-      <SignLogButton
+      <FormButton
         buttonTitle="Sign Up"
-        onPress={() => alert('Login succesful')}
+        onPress={() => alert('SignUp succesful')}
       />
 
       <TouchableOpacity

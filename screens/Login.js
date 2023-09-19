@@ -33,9 +33,9 @@ const LoginScreen = ({navigation}) => {
         secureTextEntry={true}
       />
 
-      <SignLogButton
-        buttonTitle="Sign In"
-        onPress={() => login(email, password)}
+      <FormButton
+        buttonTitle="LogIn"
+        onPress={() => alert('Login successful')}
       />
 
       <TouchableOpacity style={styles.forgotButton} onPress={() => {}}>
