@@ -51,7 +51,7 @@ const SignupScreen = ({navigation}) => {
       <TouchableOpacity
         style = {styles.navButton}
         onPress = {() => navigation.navigate('Login')}>
-        <Text style={styles.navButtonText}>Have an account? Sign In</Text>
+        <Text style={styles.navButtonText}>Have an account? Login</Text>
       </TouchableOpacity>
     </View>
   );
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   text: {
-    fontFamily: 'Arial',
+    fontFamily: 'Roboto',
     fontSize: 28,
     marginBottom: 10,
     color: '#051d5f',
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     color: '#2e64e5',
-    fontFamily: 'Arial',
+    fontFamily: 'Roboto',
   },
   textPrivate: {
     flexDirection: 'row',
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   color_textPrivate: {
     fontSize: 13,
     fontWeight: '400',
-    fontFamily: 'Arial',
+    fontFamily: 'Roboto',
     color: 'grey',
   },
 });
