@@ -1,19 +1,43 @@
-import React, {useContext, useState} from 'react';
-import {View, Text, TouchableOpacity, Platform, StyleSheet} from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, Platform, StyleSheet } from 'react-native';
 import FormInput from '../components/UserInput';
 import FormButton from '../components/SignLogButton';
+import { Fireauth } from '../firebase'; // Import Firebase Authentication
+import { createUserWithEmailAndPassword } from '@firebase/auth';
 
-const SignupScreen = ({navigation}) => {
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
-  const [confirmPassword, setConfirmPassword] = useState();
+const SignupScreen = ({ navigation }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Function to handle user sign-up
+  const signUpWithEmailPassword = () => {
+    if (password !== confirmPassword) {
+      alert("Passwords don't match.");
+      return;
+    }
+
+    Fireauth.createUserWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        // User signed up successfully
+        const user = userCredential.user;
+        console.log('User signed up:', user);
+        // You can navigate to another screen or perform additional actions here.
+      })
+      .catch((error) => {
+        // Handle errors during sign-up
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error('Error signing up:', errorCode, errorMessage);
+        // You can display an error message to the user here.
+      });
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Create an account</Text>
 
-      {/*this user input is the email. it enable the keyboard to show the '@' logo on it.
-        Capitals and autoCorrect have been disabled*/}
+      {/* Email input */}
       <FormInput
         labelValue={email}
         onChangeText={(userEmail) => setEmail(userEmail)}
@@ -24,7 +48,7 @@ const SignupScreen = ({navigation}) => {
         autoCorrect={false}
       />
 
-      {/*this is user input for the password. secureTextEntry allows for the password to be in dots*/}
+      {/* Password input */}
       <FormInput
         labelValue={password}
         onChangeText={(userPassword) => setPassword(userPassword)}
@@ -33,7 +57,7 @@ const SignupScreen = ({navigation}) => {
         secureTextEntry={true}
       />
 
-      {/*same as above, just that it is to confirm */}
+      {/* Confirm Password input */}
       <FormInput
         labelValue={confirmPassword}
         onChangeText={(userPassword) => setConfirmPassword(userPassword)}
@@ -42,15 +66,16 @@ const SignupScreen = ({navigation}) => {
         secureTextEntry={true}
       />
 
-      {/*the button to press when logging in*/}
+      {/* Sign-Up Button */}
       <FormButton
         buttonTitle="Sign Up"
-        onPress={() => alert('SignUp succesful')}
+        onPress={() => signUpWithEmailPassword()}
       />
 
+      {/* Already have an account? Login */}
       <TouchableOpacity
-        style = {styles.navButton}
-        onPress = {() => navigation.navigate('Login')}>
+        style={styles.navButton}
+        onPress={() => navigation.navigate('Login')}>
         <Text style={styles.navButtonText}>Have an account? Login</Text>
       </TouchableOpacity>
     </View>

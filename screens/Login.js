@@ -1,11 +1,30 @@
-import React, {useContext, useState} from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, Platform, StyleSheet, ScrollView } from 'react-native';
 import FormInput from '../components/UserInput';
 import FormButton from '../components/SignLogButton';
+import { Fireauth } from '../firebase'; // Import Firebase Authentication
 
-const LoginScreen = ({navigation}) => {
-  const [email, setEmail] = useState();
-  const [password, setPassword] = useState();
+const LoginScreen = ({ navigation }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  // Function to handle user login
+  const loginWithEmailPassword = () => {
+    Fireauth.signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        // User signed in successfully
+        const user = userCredential.user;
+        console.log('User signed in:', user);
+        // You can navigate to another screen or perform additional actions here.
+      })
+      .catch((error) => {
+        // Handle errors during login
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.error('Error signing in:', errorCode, errorMessage);
+        // You can display an error message to the user here.
+      });
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -15,6 +34,7 @@ const LoginScreen = ({navigation}) => {
       />
       <Text style={styles.text}>Train-Assist: OTF dawg</Text>
 
+      {/* Email input */}
       <FormInput
         labelValue={email}
         onChangeText={(userEmail) => setEmail(userEmail)}
@@ -25,6 +45,7 @@ const LoginScreen = ({navigation}) => {
         autoCorrect={false}
       />
 
+      {/* Password input */}
       <FormInput
         labelValue={password}
         onChangeText={(userPassword) => setPassword(userPassword)}
@@ -33,9 +54,10 @@ const LoginScreen = ({navigation}) => {
         secureTextEntry={true}
       />
 
+      {/* Login Button */}
       <FormButton
-        buttonTitle="LogIn"
-        onPress={() => alert('Login successful')}
+        buttonTitle="Login"
+        onPress={() => loginWithEmailPassword()}
       />
 
       <TouchableOpacity style={styles.forgotButton} onPress={() => {}}>
@@ -60,7 +82,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    paddingTop: 50
+    paddingTop: 50,
   },
   logo: {
     height: 150,
@@ -68,7 +90,7 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   text: {
-    fontFamily: 'Arial',
+    fontFamily: 'Roboto',
     fontSize: 28,
     marginBottom: 10,
     color: '#051d5f',
