@@ -3,12 +3,14 @@ import { View, Text, TouchableOpacity, Platform, StyleSheet } from 'react-native
 import FormInput from '../components/UserInput';
 import FormButton from '../components/SignLogButton';
 import { Fireauth } from '../firebase'; // Import Firebase Authentication
-import { createUserWithEmailAndPassword } from '@firebase/auth';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
 const SignupScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  const auth = getAuth();
 
   // Function to handle user sign-up
   const signUpWithEmailPassword = () => {
@@ -17,7 +19,7 @@ const SignupScreen = ({ navigation }) => {
       return;
     }
 
-    Fireauth.createUserWithEmailAndPassword(email, password)
+    createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // User signed up successfully
         const user = userCredential.user;

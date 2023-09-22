@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, Platform, StyleSheet, ScrollView } from 'react-native';
 import FormInput from '../components/UserInput';
 import FormButton from '../components/SignLogButton';
-import { Fireauth } from '../firebase'; // Import Firebase Authentication
+import { getAuth } from '@firebase/auth';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const auth = getAuth();
+
   // Function to handle user login
   const loginWithEmailPassword = () => {
-    Fireauth.signInWithEmailAndPassword(email, password)
+    signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // User signed in successfully
         const user = userCredential.user;
