@@ -26,6 +26,7 @@ const LoginScreen = ({ navigation }) => {
         console.error('Error signing in:', errorCode, errorMessage);
         // You can display an error message to the user here.
       });
+    navigation.navigate('Coach');
   };
 
   return (
