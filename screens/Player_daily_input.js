@@ -1,31 +1,72 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity,Button} from 'react-native';
+import { StyleSheet, View, Text, TextInput,TouchableWithoutFeedback ,Button ,TouchableOpacity} from 'react-native';
 import Slider from '@react-native-community/slider';
 import {set, ref ,push} from "firebase/database";
-import { db } from "/firebase";
+import { db ,auth} from "/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+
+
+const SurveyQuestion = ({ question, options, selectedOption, onSelectOption }) => {
+  const handleOptionSelect = (option) => {
+    onSelectOption(option);
+  };
+
+  const renderOptions = () => {
+    return options.map((option, index) => (
+      <TouchableOpacity
+        key={option}
+        style={[
+          styles.ratingOption,
+          selectedOption === option ? styles.selectedRatingOption : null,
+        ]}
+        onPress={() => handleOptionSelect(option)}
+      >
+        <Text style={styles.ratingText}>{option}</Text>
+      </TouchableOpacity>
+    ));
+  };
+
+  return (
+    <View style={styles.questionContainer}>
+      <Text style={styles.label}>{question}</Text>
+      <View style={[styles.ratingContainer, { justifyContent: 'center' }]}>
+        {renderOptions()}
+      </View>
+    </View>
+  );
+};
+
 
 const Player_input = () => {
   const [heartRate, setHeartRate] = useState('');
   const [hoursOfSleep, setHoursOfSleep] = useState('');
-  const [qualityOfSleep, setQualityOfSleep] = useState(0);
-  const [rpe, setRPE] = useState(0);
-  const [mentalhealthscale, setMentalHealthScale] = useState(50);
-  const [painScale, setPainScale] = useState(0);
+  const [qualityOfSleep, setQualityOfSleep] = useState('');
+  const [rpe, setRPE] = useState('');
+  const [mentalhealthscale, setMentalHealthScale] = useState('');
+  const [painScale, setPainScale] = useState('');
+  const [userName , setName] = useState("");
 
-  const handleSliderChange = (value) => {
-    setPainScale(value);
-  };
+
+  
 
   const labels = ['Terrible', 'Poor', 'Okay', 'Good', 'Excellent'];
+  const Painlabels = ['None', ' Mild', ' Moderate', ' Severe'];
+  const RPElabels = ['Very Light' ,'Light' , 'Moderate' , 'Vigorous' ,'Very hard' , 'Max Effort'];
 
-  const getLabel = (value) => {
-    const index = Math.round(value / (100 / (labels.length - 1)));
-    return labels[index];
-  };
+ // const user = user.currentUser;
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const userId = user.uid;
+      setName(user);
+    } else { 
+    }
+  });
 
   const handleClick = (action) => {
     const surveyDataRef = ref(db, `/SurveyData`);
     const dataToSave = {
+      userName,
       heartRate,
       hoursOfSleep,
       qualityOfSleep,
@@ -42,125 +83,113 @@ const Player_input = () => {
     });
   };
 
-
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Today's Survey</Text>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Heart Rate (BPM):</Text>
-        <TextInput
-          style={styles.input}
-          value={heartRate}
-          onChangeText={(text) => setHeartRate(text)}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Hours of Sleep:</Text>
-        <TextInput
-          style={styles.input}
-          value={hoursOfSleep}
-          onChangeText={(text) => setHoursOfSleep(text)}
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Quality of Sleep:</Text>
-        <Slider
-          style={styles.slider}
-          minimumValue={0}
-          maximumValue={100}
-          step={1}
-          value={qualityOfSleep}
-          onValueChange={(value) => setQualityOfSleep(value)}
-        />
-      <Text style={styles.sliderValue}>{getLabel(qualityOfSleep)}</Text>
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Mental Health:</Text>
-        <Slider
-          style={styles.slider}
-          minimumValue={0}
-          maximumValue={100}
-          step={1}
-          value={mentalhealthscale}
-          onValueChange={(value) => setMentalHealthScale(value)}
-        />
-      <Text style={styles.sliderValue}>{getLabel(mentalhealthscale)}</Text>
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Pain Scale:</Text>
-        <Slider
-          style={styles.slider}
-          minimumValue={0}
-          maximumValue={100}
-          step={1}
-          value={painScale}
-          onValueChange={handleSliderChange}
-        />
-        <Text style={styles.sliderValue}>{painScale}</Text>
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>RPE:</Text>
-        <Slider
-          style={styles.slider}
-          minimumValue={0}
-          maximumValue={100}
-          step={1}
-          value={rpe}
-          onValueChange={(value) => setRPE(value)}
-        />
-        <Text style={styles.sliderValue}>{rpe}</Text>
-      </View>
+      <SurveyQuestion
+        question="Hours of Sleep:"
+        options={['<5', '5-7', '8-10', '>10']}
+        selectedOption={hoursOfSleep}
+        onSelectOption={(value) => setHoursOfSleep(value)}
+      />
+      <SurveyQuestion
+        question="Quality of Sleep:"
+        options={labels}
+        selectedOption={qualityOfSleep}
+        onSelectOption={(value) => setQualityOfSleep(value)} 
+      />
+      <SurveyQuestion
+        question="Heart Rate (BPM):"
+        options={['Low', 'Normal', 'High']}
+        selectedOption={heartRate}
+        onSelectOption={(value) => setHeartRate(value)} 
+      />
+      <SurveyQuestion
+        question="RPE:"
+        options={RPElabels}
+        selectedOption={rpe}
+        onSelectOption={(value) => setRPE(value)} 
+      />
+      <SurveyQuestion
+        question="Pain Scale:"
+        options={Painlabels}
+        selectedOption={painScale}
+        onSelectOption={(value) => setPainScale(value)} 
+      />
+      <SurveyQuestion
+        question="Overall Wellness:"
+        options={labels}
+        selectedOption={mentalhealthscale}
+        onSelectOption={(value) => setMentalHealthScale(value)} 
+      />
       <View style={styles.buttonContainer}>
-        <Button onPress={() => handleClick('handleSave')} title="Save" />
+      <Button
+        onPress={handleClick}
+        title="Save"
+        style={styles.customButton}
+      />
       </View>
+    
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    alignItems: 'stretch', // Fill the screen width
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    alignItems: 'left',
+    padding: 20,
   },
   heading: {
     fontSize: 24,
-    marginBottom: 20,
     fontWeight: 'bold',
+    marginBottom: 20,
   },
-  inputContainer: {
-    flexDirection: 'row',
+  questionContainer: {
+    marginBottom: 15, 
+    flexDirection: 'row', 
     alignItems: 'center',
-    marginBottom: 10,
+    justifyContent: 'space-between', 
   },
   label: {
-    flex: 1,
-    fontSize: 18,
-    marginRight: 10,
+    fontSize: 17.5,
   },
-  input: {
-    flex: 2,
-    fontSize: 18,
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems : 'right',
+    justifyContent: 'center',
     padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    backgroundColor: '#f2f2f2',
+
   },
-  slider: {
-    flex: 2,
-    width:200 ,
+  ratingOption: {
+    width:53,
+    height: 53,
+    borderRadius: 40,
+    borderColor: 'gray',
+    borderWidth: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 10,
   },
-  sliderValue: {
-    fontSize: 18,
-    marginLeft: 10,
+  selectedRatingOption: {
+    borderColor: 'gold',
+  
+  },
+  ratingText: {
+    fontSize: 10,
+    color: 'black',
   },
   buttonContainer: {
-    marginTop: 20,
-    alignItems:'center',
-    width:20,
+    marginTop: 30,
+    alignItems: 'center',
+    
   },
+  customButton: {
+    width: 200,  
+    height: 200,  
+  },
+  
 });
 
 export default Player_input;
