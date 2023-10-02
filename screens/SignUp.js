@@ -4,6 +4,8 @@ import FormInput from '../components/UserInput';
 import FormButton from '../components/SignLogButton';
 import { Fireauth } from '../firebase'; // Import Firebase Authentication
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getDatabase, ref, set } from 'firebase/database';
+
 
 const SignupScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -18,13 +20,32 @@ const SignupScreen = ({ navigation }) => {
       alert("Passwords don't match.");
       return;
     }
-
+  
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // User signed up successfully
         const user = userCredential.user;
         console.log('User signed up:', user);
-        // You can navigate to another screen or perform additional actions here.
+  
+        // Store user information in the Firebase Realtime Database
+        const db = getDatabase();
+        const userRef = ref(db, 'users/' + user.uid); // 'users' is the table name, user.uid is a unique identifier for each user
+  
+        // Replace the following with the actual user data you want to store
+        const userData = {
+          email: email,
+          // Add more fields as needed
+        };
+  
+        set(userRef, userData)
+          .then(() => {
+            console.log('User data stored in the database.');
+            // You can navigate to another screen or perform additional actions here.
+          })
+          .catch((error) => {
+            console.error('Error storing user data:', error);
+            // Handle errors during data storage
+          });
       })
       .catch((error) => {
         // Handle errors during sign-up
@@ -34,6 +55,7 @@ const SignupScreen = ({ navigation }) => {
         // You can display an error message to the user here.
       });
   };
+  
 
   return (
     <View style={styles.container}>

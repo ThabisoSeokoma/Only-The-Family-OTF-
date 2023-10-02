@@ -4,6 +4,7 @@ import FormInput from '../components/UserInput';
 import FormButton from '../components/SignLogButton';
 import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
 
+
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -11,23 +12,25 @@ const LoginScreen = ({ navigation }) => {
   const auth = getAuth();
 
   // Function to handle user login
-  const loginWithEmailPassword = () => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // User signed in successfully
-        const user = userCredential.user;
-        console.log('User signed in:', user);
-        // You can navigate to another screen or perform additional actions here.
-      })
-      .catch((error) => {
-        // Handle errors during login
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error('Error signing in:', errorCode, errorMessage);
-        // You can display an error message to the user here.
-      });
-    navigation.navigate('Coach');
-  };
+  // Function to handle user login
+const loginWithEmailPassword = () => {
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // User signed in successfully
+      const user = userCredential.user;
+      console.log('User signed in:', user);
+      // Navigate to the Coach page here
+      navigation.navigate('Coach');
+    })
+    .catch((error) => {
+      // Handle errors during login
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.error('Error signing in:', errorCode, errorMessage);
+      // You can display an error message to the user here.
+    });
+};
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
