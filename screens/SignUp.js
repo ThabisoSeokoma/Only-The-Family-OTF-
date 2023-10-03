@@ -1,30 +1,59 @@
 import React, { useState } from 'react';
+import { Picker } from '@react-native-picker/picker';
 import { View, Text, TouchableOpacity, Platform, StyleSheet } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import FormInput from '../components/UserInput';
 import FormButton from '../components/SignLogButton';
 import { Fireauth } from '../firebase'; // Import Firebase Authentication
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword,updateProfile } from 'firebase/auth';
+import { getDatabase, ref, set } from 'firebase/database'
+
 
 const SignupScreen = ({ navigation }) => {
+ 
+  const [name, setName] = useState(''); // Add state for name
+  const [surname, setSurname] = useState(''); // Add state for surname
+  const [id, setId] = useState(''); // Add state for ID
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [dateOfBirth, setDateOfBirth] = useState(new Date()); // Initialize with the current date, or the default date you prefer
+  const [role, setRole] = useState('Athlete'); // Default role is player
+
 
   const auth = getAuth();
 
-  // Function to handle user sign-up
   const signUpWithEmailPassword = () => {
     if (password !== confirmPassword) {
       alert("Passwords don't match.");
       return;
     }
-
+  
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // User signed up successfully
         const user = userCredential.user;
-        console.log('User signed up:', user);
-        // You can navigate to another screen or perform additional actions here.
+  
+        // Store additional user information in the Realtime Database
+        const db = getDatabase();
+        const node = role === 'HealthProfessional' ? 'HealthProfessionals' : 'Athletes';
+
+        const userRef = ref(db, `${node}/${user.uid}`);
+        set(userRef, {
+          name,
+          surname,
+          email,
+          dateOfBirth: dateOfBirth.toISOString(), // Convert to ISO format for consistency
+        })
+          .then(() => {
+            // Profile updated successfully
+            console.log('User information stored in Realtime Database:', user);
+  
+            // You can navigate to another screen or perform additional actions here.
+          })
+          .catch((error) => {
+            console.error('Error storing user information:', error);
+          });
       })
       .catch((error) => {
         // Handle errors during sign-up
@@ -34,10 +63,80 @@ const SignupScreen = ({ navigation }) => {
         // You can display an error message to the user here.
       });
   };
+  const handleDateChange = (event, selectedDate) => {
+      setShowDatePicker(false);
+      if (selectedDate) {
+        setDateOfBirth(selectedDate);
+      }
+    };
+  
 
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Create an account</Text>
+
+       {/* Add Name input */}
+      <FormInput
+        labelValue={name}
+        onChangeText={(userName) => setName(userName)}
+        placeholderText="Name"
+        iconType="user"
+        keyboardType="default"
+        autoCapitalize="words"
+        autoCorrect={false}
+      />
+
+      {/* Add Surname input */}
+      <FormInput
+        labelValue={surname}
+        onChangeText={(userSurname) => setSurname(userSurname)}
+        placeholderText="Surname"
+        keyboardType="default"
+        iconType="user"
+        autoCapitalize="words"
+        autoCorrect={false}
+
+                           />
+      
+  {/* Date of Birth input */}
+  <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+        <Text>{`Date of Birth: ${dateOfBirth.toDateString()}`}</Text>
+      </TouchableOpacity>
+
+      {showDatePicker && (
+        <DateTimePicker
+          value={dateOfBirth}
+          mode="date"
+          display="default"
+          onChange={handleDateChange}
+        />
+      )}
+      {/* Select role */}
+      <Text>Select role:</Text>
+<Picker
+  selectedValue={role}
+  onValueChange={(itemValue) => {
+    console.log('Selected value:', itemValue);
+    setRole(itemValue);
+  }}
+  style={styles.androidPickerContainer}
+>
+  <Picker.Item label="Athlete" value="Athlete" />
+  <Picker.Item label="HealthProfessional" value="HealthProfessional" />
+</Picker>
+
+
+      {/* Add ID input */}
+      <FormInput
+        labelValue={id}
+        onChangeText={(userId) => setId(userId)}
+        placeholderText="ID"
+        keyboardType="numeric"
+        iconType="user"
+        autoCapitalize="none"
+        autoCorrect={false}
+      />
+
 
       {/* Email input */}
       <FormInput
@@ -84,8 +183,6 @@ const SignupScreen = ({ navigation }) => {
   );
 };
 
-export default SignupScreen;
-
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#f9fafd',
@@ -99,6 +196,12 @@ const styles = StyleSheet.create({
     fontSize: 28,
     marginBottom: 10,
     color: '#051d5f',
+  },
+  androidPickerContainer: {
+    borderWidth: 64,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    backgroundColor: 'blue',
   },
   navButton: {
     marginTop: 15,
@@ -122,3 +225,5 @@ const styles = StyleSheet.create({
     color: 'grey',
   },
 });
+
+export default SignupScreen;
