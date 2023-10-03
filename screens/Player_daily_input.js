@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput,TouchableWithoutFeedback ,Button ,TouchableOpacity} from 'react-native';
 import Slider from '@react-native-community/slider';
 import {set, ref ,push} from "firebase/database";
-import { db ,auth} from "/firebase";
+import { db ,auth} from "../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
 
@@ -77,6 +77,7 @@ const Player_input = () => {
   set(surveyDataRef, dataToSave)
     .then(() => {
       console.log('Data saved to Firebase');
+      navigation.navigate('Details');
     })
     .catch((error) => {
       console.error('Error saving data to Firebase:', error);

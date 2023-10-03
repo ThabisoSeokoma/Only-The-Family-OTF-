@@ -26,6 +26,7 @@ const SignupScreen = ({ navigation }) => {
         // User signed up successfully
         const user = userCredential.user;
         console.log('User signed up:', user);
+        navigation.navigate('Details');
   
         // Store user information in the Firebase Realtime Database
         const db = getDatabase();

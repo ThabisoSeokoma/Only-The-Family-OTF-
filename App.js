@@ -7,7 +7,8 @@ import SignupScreen from "./screens/SignUp";
 import CoachProfile from "./screens/CoachProfile";
 import AddClubScreen from "./screens/AddClubScreen";
 import Player_input from "./screens/Player_daily_input";
-import CircleRatingScale from "./screens/PlayerProfile";
+import DetailsScreen from "./screens/Analysis";
+//import CircleRatingScale from "./screens/PlayerProfile";
 
 const AppStack = createNativeStackNavigator();
 
@@ -20,7 +21,7 @@ const App = () => {
         <AppStack.Screen name="CoachProfile" component={CoachProfile} />
         <AppStack.Screen name="AddClub" component={AddClubScreen} />
         <AppStack.Screen name="Player_inputs" component={Player_input} />
-        <AppStack.Screen name="Player" component={CircleRatingScale} />
+        <AppStack.Screen name="Details" component={DetailsScreen}/>
       </AppStack.Navigator>
     </NavigationContainer>
   );

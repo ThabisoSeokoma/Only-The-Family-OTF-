@@ -52,7 +52,7 @@ const AddClubScreen = () => {
       .then(() => {
         console.log('Club data saved in the database.');
         // navigate to coach screen
-        navigation.navigate('Coach');
+        navigation.navigate('CoachProfile');
       })
       .catch((error) => {
         console.error('Error saving club data:', error);

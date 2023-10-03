@@ -18,7 +18,7 @@ const LoginScreen = ({ navigation }) => {
         const user = userCredential.user;
         console.log('User signed in:', user);
         // You can navigate to another screen or perform additional actions here.
-        navigation.navigate('Player_inputs');
+        navigation.navigate('Details');
       })
       .catch((error) => {
         // Handle errors during login
