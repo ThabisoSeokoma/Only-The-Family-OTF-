@@ -18,6 +18,7 @@ const LoginScreen = ({ navigation }) => {
         const user = userCredential.user;
         console.log('User signed in:', user);
         // You can navigate to another screen or perform additional actions here.
+        navigation.navigate('Details');
       })
       .catch((error) => {
         // Handle errors during login
@@ -26,8 +27,7 @@ const LoginScreen = ({ navigation }) => {
         console.error('Error signing in:', errorCode, errorMessage);
         // You can display an error message to the user here.
       });
-      navigation.navigate('Player_inputs');
-    };
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

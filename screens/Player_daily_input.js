@@ -77,6 +77,7 @@ const Player_input = () => {
   set(surveyDataRef, dataToSave)
     .then(() => {
       console.log('Data saved to Firebase');
+      navigation.navigate('Details');
     })
     .catch((error) => {
       console.error('Error saving data to Firebase:', error);
