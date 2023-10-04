@@ -21,7 +21,7 @@ const CoachProfile = () => {
     const userId =  user.uid;
 
     // Get a reference to the user's clubs
-    const userClubsRef = ref(db, `users/${userId}/clubs`);
+    const userClubsRef = ref(db, `HealthProfessionals/${userId}/clubs`);
 
     // Listen for changes in the clubs data
     onValue(userClubsRef, (snapshot) => {

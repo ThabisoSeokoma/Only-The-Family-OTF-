@@ -38,7 +38,7 @@ const AddClubScreen = () => {
 
     // Save clubName and clubLogo to the user's "clubs" table
     const db = getDatabase();
-    const userClubsRef = ref(db, `users/${user.uid}/clubs`);
+    const userClubsRef = ref(db, `HealthProfessionals/${user.uid}/clubs`);
     const newClubRef = push(userClubsRef);
 
     // Create a new club object with name and logo

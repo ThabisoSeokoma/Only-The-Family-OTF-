@@ -61,6 +61,12 @@ const SignupScreen = ({ navigation }) => {
           .then(() => {
             // Profile updated successfully
             console.log('User information stored in Realtime Database:', user);
+            if (role == 'Athlete') {
+              navigation.navigate('Player_inputs');
+            }
+            else{
+              navigation.navigate('Coach');
+            }
   
             // You can navigate to another screen or perform additional actions here.
             navigation.navigate('Login');

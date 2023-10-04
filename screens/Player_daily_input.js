@@ -64,7 +64,7 @@ const Player_input = () => {
   });
 
   const handleClick = (action) => {
-    const surveyDataRef = ref(db, `/SurveyData`);
+    const surveyDataRef = ref(db, `Athletes/${user.uid}/SurveyData`);
     const dataToSave = {
       //userName,
       heartRate,
