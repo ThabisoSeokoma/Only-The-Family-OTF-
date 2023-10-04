@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import {ScrollView, View, Text, TouchableOpacity, Platform, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { Calendar } from 'react-native-calendars';
 import FormInput from '../components/UserInput';
 import FormButton from '../components/SignLogButton';
 import { Fireauth } from '../firebase'; // Import Firebase Authentication
@@ -22,6 +23,7 @@ const SignupScreen = ({ navigation }) => {
   const [dateOfBirth, setDateOfBirth] = useState(new Date()); // Initialize with the current date, or the default date you prefer
   const [role, setRole] = useState('Athlete'); // Default role is player
   const [passwordStrength, setPasswordStrength] = useState(null);
+  const [showCalendar, setShowCalendar] = useState(false);
 
  
   const auth = getAuth();
@@ -92,8 +94,17 @@ const SignupScreen = ({ navigation }) => {
       }
     };
     const handleSignUp = () => {
-      // Additional logic for sign-up if needed
       signUpWithEmailPassword();
+    };
+    const renderCalendar = () => {
+      return showCalendar ? (
+        <Calendar
+          onDayPress={(day) => {
+            setDateOfBirth(new Date(day.dateString));
+            setShowCalendar(false);
+          }}
+        />
+      ) : null;
     };
   
 
@@ -126,27 +137,23 @@ const SignupScreen = ({ navigation }) => {
                            />
       
   {/* Date of Birth input */}
-  <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+  <TouchableOpacity
+        style={styles.calendarButton}
+        onPress={() => setShowCalendar(!showCalendar)}>
         <Text>{`Date of Birth: ${dateOfBirth.toDateString()}`}</Text>
       </TouchableOpacity>
 
-      {showDatePicker && (
-        <DateTimePicker
-          value={dateOfBirth}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-        />
-      )}
+      {renderCalendar()}
       {/* Select role */}
-      <Text>Select role:</Text>
+      <Text style={styles.roleText}>Select role:</Text>
 <Picker
   selectedValue={role}
   onValueChange={(itemValue) => {
     console.log('Selected value:', itemValue);
     setRole(itemValue);
   }}
-  style={styles.androidPickerContainer}
+  //style={styles.androidPickerContainer}
+  style={styles.picker}
 >
   <Picker.Item label="Athlete" value="Athlete" />
   <Picker.Item label="Management" value="Management" />
@@ -217,11 +224,32 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: '#051d5f',
   },
-  androidPickerContainer: {
-    borderWidth: 64,
+  /*androidPickerContainer: {
+    borderWidth: 80,
     borderColor: '#ccc',
-    borderRadius: 4,
-    backgroundColor: 'blue',
+    borderRadius: 1,
+    backgroundColor: 'white',
+  },*/
+
+  calendarButton: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 10,
+    padding: 25,
+  },
+  roleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 250,
+  },
+  roleText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginRight: 230,
+  },
+  picker: {
+    width: '50%', 
   },
   navButton: {
     marginTop: 15,
@@ -243,6 +271,12 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     fontFamily: 'Roboto',
     color: 'grey',
+  },
+  boldText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginRight: 200,
   },
 });
 
