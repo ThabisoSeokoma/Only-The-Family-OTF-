@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
-import ImagePicker from 'react-native-image-picker';
+import ImagePicker from '@react-native-picker/picker';
 import { getAuth } from 'firebase/auth';
 import { getDatabase, ref, push, set } from 'firebase/database';
-import { launchImageLibrary } from 'react-native-image-picker'; // Import the correct function
+import { launchImageLibrary } from '@react-native-picker/picker'; // Import the correct function
 
 
 const AddClubScreen = () => {
@@ -38,7 +38,7 @@ const AddClubScreen = () => {
 
     // Save clubName and clubLogo to the user's "clubs" table
     const db = getDatabase();
-    const userClubsRef = ref(db, `users/${user.uid}/clubs`);
+    const userClubsRef = ref(db, `HealthProfessionals/${user.uid}/clubs`);
     const newClubRef = push(userClubsRef);
 
     // Create a new club object with name and logo
