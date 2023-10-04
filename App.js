@@ -20,7 +20,7 @@ const App = () => {
         <AppStack.Screen name="SignUp" component={SignupScreen} />
         <AppStack.Screen name="Coach" component={CoachProfile}/>
         <AppStack.Screen name ="Player_inputs" component = {Player_input} />
-        {/* //<AppStack.Screen name ="Player" component = {CircleRatingScale} /> */}
+        <AppStack.Screen name ="Player" component = {CircleRatingScale} />
         <AppStack.Screen name ="Details" component = {DetailsScreen} />
       </AppStack.Navigator>
     </NavigationContainer>
