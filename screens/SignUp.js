@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
-import { View, Text, TouchableOpacity, Platform, StyleSheet } from 'react-native';
+import {ScrollView, View, Text, TouchableOpacity, Platform, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import FormInput from '../components/UserInput';
 import FormButton from '../components/SignLogButton';
@@ -9,20 +9,33 @@ import { getAuth, createUserWithEmailAndPassword,updateProfile } from 'firebase/
 import { getDatabase, ref, set } from 'firebase/database'
 
 
+
+
 const SignupScreen = ({ navigation }) => {
  
   const [name, setName] = useState(''); // Add state for name
   const [surname, setSurname] = useState(''); // Add state for surname
-  const [id, setId] = useState(''); // Add state for ID
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState(new Date()); // Initialize with the current date, or the default date you prefer
   const [role, setRole] = useState('Athlete'); // Default role is player
+  const [passwordStrength, setPasswordStrength] = useState(null);
 
-
+ 
   const auth = getAuth();
+
+  const isPasswordStrong = (password) => {
+    // Check if the password is at least 8 characters long and contains a mix of uppercase, lowercase, and numbers
+    const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    return strongRegex.test(password);
+  };
+
+  const handlePasswordChange = (value) => {
+    setPassword(value);
+    setPasswordStrength(isPasswordStrong(value));
+  };
 
   const signUpWithEmailPassword = () => {
     if (password !== confirmPassword) {
@@ -36,7 +49,7 @@ const SignupScreen = ({ navigation }) => {
   
         // Store additional user information in the Realtime Database
         const db = getDatabase();
-        const node = role === 'HealthProfessional' ? 'HealthProfessionals' : 'Athletes';
+        const node = role === 'Management' ? 'Managements' : 'Athletes';
 
         const userRef = ref(db, `${node}/${user.uid}`);
         set(userRef, {
@@ -50,6 +63,7 @@ const SignupScreen = ({ navigation }) => {
             console.log('User information stored in Realtime Database:', user);
   
             // You can navigate to another screen or perform additional actions here.
+            navigation.navigate('Login');
           })
           .catch((error) => {
             console.error('Error storing user information:', error);
@@ -63,15 +77,22 @@ const SignupScreen = ({ navigation }) => {
         // You can display an error message to the user here.
       });
   };
+  
+  
   const handleDateChange = (event, selectedDate) => {
       setShowDatePicker(false);
       if (selectedDate) {
         setDateOfBirth(selectedDate);
       }
     };
+    const handleSignUp = () => {
+      // Additional logic for sign-up if needed
+      signUpWithEmailPassword();
+    };
   
 
   return (
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
     <View style={styles.container}>
       <Text style={styles.text}>Create an account</Text>
 
@@ -122,20 +143,8 @@ const SignupScreen = ({ navigation }) => {
   style={styles.androidPickerContainer}
 >
   <Picker.Item label="Athlete" value="Athlete" />
-  <Picker.Item label="HealthProfessional" value="HealthProfessional" />
+  <Picker.Item label="Management" value="Management" />
 </Picker>
-
-
-      {/* Add ID input */}
-      <FormInput
-        labelValue={id}
-        onChangeText={(userId) => setId(userId)}
-        placeholderText="ID"
-        keyboardType="numeric"
-        iconType="user"
-        autoCapitalize="none"
-        autoCorrect={false}
-      />
 
 
       {/* Email input */}
@@ -152,11 +161,17 @@ const SignupScreen = ({ navigation }) => {
       {/* Password input */}
       <FormInput
         labelValue={password}
-        onChangeText={(userPassword) => setPassword(userPassword)}
+        onChangeText={(userPassword) => handlePasswordChange(userPassword)}
         placeholderText="Password"
         iconType="lock"
         secureTextEntry={true}
       />
+       {/* Password strength feedback */}
+       {passwordStrength !== null && !passwordStrength && (
+        <Text style={{ color: 'red', marginTop: 5 }}>
+          Password is too weak. Please use a stronger password.
+        </Text>
+      )}
 
       {/* Confirm Password input */}
       <FormInput
@@ -166,12 +181,10 @@ const SignupScreen = ({ navigation }) => {
         iconType="lock"
         secureTextEntry={true}
       />
+      
 
       {/* Sign-Up Button */}
-      <FormButton
-        buttonTitle="Sign Up"
-        onPress={() => signUpWithEmailPassword()}
-      />
+      <FormButton buttonTitle="Sign Up" onPress={handleSignUp} />
 
       {/* Already have an account? Login */}
       <TouchableOpacity
@@ -180,6 +193,7 @@ const SignupScreen = ({ navigation }) => {
         <Text style={styles.navButtonText}>Have an account? Login</Text>
       </TouchableOpacity>
     </View>
+    </ScrollView>
   );
 };
 

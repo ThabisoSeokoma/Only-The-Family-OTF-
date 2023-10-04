@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
-import ImagePicker from 'react-native-image-picker';
+//import ImagePicker from 'react-native-image-picker';
 import { getAuth } from 'firebase/auth';
 import { getDatabase, ref, push, set } from 'firebase/database';
-import { launchImageLibrary } from 'react-native-image-picker'; // Import the correct function
+//import { launchImageLibrary } from 'react-native-image-picker'; // Import the correct function
 
 
 const AddClubScreen = () => {

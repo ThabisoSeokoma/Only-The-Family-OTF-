@@ -66,7 +66,7 @@ const Player_input = () => {
   const handleClick = (action) => {
     const surveyDataRef = ref(db, `/SurveyData`);
     const dataToSave = {
-      userName,
+      //userName,
       heartRate,
       hoursOfSleep,
       qualityOfSleep,
