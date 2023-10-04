@@ -61,11 +61,7 @@ const Player_input = () => {
     const surveyDataRef = ref(db, `SurveyData/${user.uid}/`);
     
     const dataToSave = {
-<<<<<<< HEAD
       dateandtime: dateandtime.toISOString(),
-=======
-      //userName,
->>>>>>> cc2821add4521b96d26322db93e9e4b787a750fc
       heartRate,
       hoursOfSleep,
       qualityOfSleep,
