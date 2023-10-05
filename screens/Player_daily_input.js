@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput,TouchableWithoutFeedback ,Button ,TouchableOpacity} from 'react-native';
 import Slider from '@react-native-community/slider';
 import {set, ref ,push} from "firebase/database";
-import { db ,auth} from "../firebase";
+import { db ,auth} from "/firebase";
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { onAuthStateChanged } from "firebase/auth";
-
 
 const SurveyQuestion = ({ question, options, selectedOption, onSelectOption }) => {
   const handleOptionSelect = (option) => {
@@ -36,7 +36,6 @@ const SurveyQuestion = ({ question, options, selectedOption, onSelectOption }) =
   );
 };
 
-
 const Player_input = () => {
   const [heartRate, setHeartRate] = useState('');
   const [hoursOfSleep, setHoursOfSleep] = useState('');
@@ -45,28 +44,24 @@ const Player_input = () => {
   const [mentalhealthscale, setMentalHealthScale] = useState('');
   const [painScale, setPainScale] = useState('');
   const [userName , setName] = useState("");
+  const [dateandtime, setDatandtime] = useState(new Date()); 
 
-
-  
 
   const labels = ['Terrible', 'Poor', 'Okay', 'Good', 'Excellent'];
   const Painlabels = ['None', ' Mild', ' Moderate', ' Severe'];
   const RPElabels = ['Very Light' ,'Light' , 'Moderate' , 'Vigorous' ,'Very hard' , 'Max Effort'];
 
- // const user = user.currentUser;
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      const userId = user.uid;
-      setName(user);
-    } else { 
-    }
-  });
+  const user = auth.currentUser;
 
   const handleClick = (action) => {
-    const surveyDataRef = ref(db, `Athletes/${user.uid}/SurveyData`);
+    if(!user){
+      console.error('User not Authinticated');
+      return;
+    }
+    const surveyDataRef = ref(db, `SurveyData/${user.uid}/`);
+    
     const dataToSave = {
-      //userName,
+      dateandtime: dateandtime.toISOString(),
       heartRate,
       hoursOfSleep,
       qualityOfSleep,
@@ -161,7 +156,6 @@ const styles = StyleSheet.create({
     alignItems : 'right',
     justifyContent: 'center',
     padding: 10,
-
   },
   ratingOption: {
     width:53,
