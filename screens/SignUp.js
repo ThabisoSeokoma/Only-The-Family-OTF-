@@ -130,18 +130,18 @@ const SignupScreen = ({ navigation }) => {
       {renderCalendar()}
       {/* Select role */}
       <Text style={styles.roleText}>Select role:</Text>
-<Picker
-  selectedValue={role}
-  onValueChange={(itemValue) => {
-    console.log('Selected value:', itemValue);
-    setRole(itemValue);
-  }}
-  //style={styles.androidPickerContainer}
-  style={styles.picker}
->
-  <Picker.Item label="Athlete" value="Athlete" />
-  <Picker.Item label="HealthProfessional" value="HealthProfessional" />
-</Picker>
+        <Picker
+          selectedValue={role}
+          onValueChange={(itemValue) => {
+            console.log('Selected value:', itemValue);
+            setRole(itemValue);
+          }}
+          //style={styles.androidPickerContainer}
+          style={styles.picker}
+        >
+          <Picker.Item label="Athlete" value="Athlete" />
+          <Picker.Item label="HealthProfessional" value="HealthProfessional" />
+        </Picker>
 
 
       {/* Add ID input */}

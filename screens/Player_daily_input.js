@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput,TouchableWithoutFeedback ,Button ,TouchableOpacity} from 'react-native';
 import Slider from '@react-native-community/slider';
 import {set, ref ,push} from "firebase/database";
-import { db ,auth} from "/firebase";
+import { db , auth} from "../firebase";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -55,10 +55,10 @@ const Player_input = () => {
 
   const handleClick = (action) => {
     if(!user){
-      console.error('User not Authinticated');
+      console.error('User not Authenticated');
       return;
     }
-    const surveyDataRef = ref(db, `SurveyData/${user.uid}/`);
+    const surveyDataRef = ref(db, `Athletes/${user.uid}/surveyData`);
     
     const dataToSave = {
       dateandtime: dateandtime.toISOString(),
@@ -72,7 +72,7 @@ const Player_input = () => {
   set(surveyDataRef, dataToSave)
     .then(() => {
       console.log('Data saved to Firebase');
-      navigation.navigate('Details');
+      navigation.navigate('Player');
     })
     .catch((error) => {
       console.error('Error saving data to Firebase:', error);
