@@ -1,31 +1,25 @@
 /*
-Graphs which will show for both the coach and the player
-okay this will  be a selector for now
-*/
+Resting heart rate (on waking in the morning)
+Quality and hours of sleep
+VAS (Visual Analogue Scale)
+Pain from previous day
+Mental Health*/
 
 import React, { useState } from 'react';
-import { View, Text, Image, Platform, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Image, Platform, StyleSheet, ScrollView } from 'react-native';
+import FormInput from '../components/UserInput';
 import FormButton from '../components/SignLogButton';
+import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
 
-const DetailsScreen = ({ navigation }) => {
+const ProgressScreen = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Button to player */}
-      <FormButton
-        buttonTitle="Go to Player"
-        onPress={() => navigation.navigate('Player_inputs')}
-      />
-
-      {/* Button to coach */}
-      <FormButton
-        buttonTitle="Go to Coach"
-        onPress={() => navigation.navigate('CoachProfile')}
-      />
+        <Text style={styles.text}> Deez Nuts Chief </Text>
     </ScrollView>
   );
 };
 
-export default DetailsScreen;
+export default ProgressScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -33,7 +27,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     paddingTop: 50,
-    flex: 1,
   },
   logo: {
     height: 150,
