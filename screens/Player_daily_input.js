@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput,TouchableWithoutFeedback ,Button ,TouchableOpacity} from 'react-native';
+import { StyleSheet, View, Text, TextInput,TouchableWithoutFeedback ,Button ,TouchableOpacity,ScrollView} from 'react-native';
 import Slider from '@react-native-community/slider';
 import {set, ref ,push} from "firebase/database";
-import { db ,auth} from "/firebase";
+import { db ,auth} from "../firebase";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -49,7 +49,7 @@ const Player_input = () => {
 
   const labels = ['Terrible', 'Poor', 'Okay', 'Good', 'Excellent'];
   const Painlabels = ['None', ' Mild', ' Moderate', ' Severe'];
-  const RPElabels = ['Very Light' ,'Light' , 'Moderate' , 'Vigorous' ,'Very hard' , 'Max Effort'];
+  const RPElabels = [1,2,3,4,5,6,7,8,9,10];//['Very Light' ,'Light' , 'Moderate' , 'Vigorous' ,'Very hard' , 'Max Effort'];
 
   const user = auth.currentUser;
 
@@ -82,6 +82,7 @@ const Player_input = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Today's Survey</Text>
+      
       <SurveyQuestion
         question="Hours of Sleep:"
         options={['<5', '5-7', '8-10', '>10']}
@@ -101,6 +102,7 @@ const Player_input = () => {
         onSelectOption={(value) => setHeartRate(value)} 
       />
       <SurveyQuestion
+    
         question="RPE:"
         options={RPElabels}
         selectedOption={rpe}
@@ -125,7 +127,7 @@ const Player_input = () => {
         style={styles.customButton}
       />
       </View>
-    
+  
     </View>
   );
 };
@@ -153,8 +155,9 @@ const styles = StyleSheet.create({
   },
   ratingContainer: {
     flexDirection: 'row',
-    alignItems : 'right',
-    justifyContent: 'center',
+    alignItems : 'center',
+    justifyContent: 'flex-start',
+    flexWrap: 'wrap',
     padding: 10,
   },
   ratingOption: {
@@ -165,7 +168,8 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 10,
+    marginHorizontal: 2,
+    marginBottom: 5,
   },
   selectedRatingOption: {
     borderColor: 'gold',
