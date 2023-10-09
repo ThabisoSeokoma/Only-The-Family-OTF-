@@ -36,7 +36,7 @@ const SurveyQuestion = ({ question, options, selectedOption, onSelectOption }) =
   );
 };
 
-const Player_input = () => {
+const Player_input = ({navigation}) => {
   const [heartRate, setHeartRate] = useState('');
   const [hoursOfSleep, setHoursOfSleep] = useState('');
   const [qualityOfSleep, setQualityOfSleep] = useState('');
@@ -72,6 +72,7 @@ const Player_input = () => {
   set(surveyDataRef, dataToSave)
     .then(() => {
       console.log('Data saved to Firebase');
+      alert("Data has been saved");
       navigation.navigate('Player');
     })
     .catch((error) => {
