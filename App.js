@@ -10,7 +10,7 @@ import Player_input from "./screens/Player_daily_input";
 import PlayerScreen from "./screens/PlayerProfile";
 import ProgressScreen from "./screens/Progress";
 import CircleRatingScale from "./screens/PlayerProfile";
-import DetailsScreen from "./screens/Analysis";
+import DetailsScreen from "./screens/Progress";
 import ForgotPassWord from "./screens/ForgotPassWord";
 
 const AppStack = createNativeStackNavigator();
