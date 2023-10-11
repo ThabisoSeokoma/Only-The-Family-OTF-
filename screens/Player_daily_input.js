@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput,TouchableWithoutFeedback ,Button ,TouchableOpacity,ScrollView} from 'react-native';
 import Slider from '@react-native-community/slider';
 import {set, ref ,push} from "firebase/database";
+<<<<<<< Updated upstream
 import { db , auth} from "../firebase";
 import DateTimePicker from '@react-native-community/datetimepicker';
+=======
+import { db ,auth} from "../firebase";
+>>>>>>> Stashed changes
 import { onAuthStateChanged } from "firebase/auth";
 
 const SurveyQuestion = ({ question, options, selectedOption, onSelectOption }) => {
