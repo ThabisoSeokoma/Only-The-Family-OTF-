@@ -2,12 +2,8 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput,TouchableWithoutFeedback ,Button ,TouchableOpacity,ScrollView} from 'react-native';
 import Slider from '@react-native-community/slider';
 import {set, ref ,push} from "firebase/database";
-<<<<<<< Updated upstream
 import { db , auth} from "../firebase";
 import DateTimePicker from '@react-native-community/datetimepicker';
-=======
-import { db ,auth} from "../firebase";
->>>>>>> Stashed changes
 import { onAuthStateChanged } from "firebase/auth";
 
 const SurveyQuestion = ({ question, options, selectedOption, onSelectOption }) => {
@@ -40,48 +36,48 @@ const SurveyQuestion = ({ question, options, selectedOption, onSelectOption }) =
   );
 };
 
-const Player_input = ({navigation}) => {
-  const [heartRate, setHeartRate] = useState('');
-  const [hoursOfSleep, setHoursOfSleep] = useState('');
-  const [qualityOfSleep, setQualityOfSleep] = useState('');
-  const [rpe, setRPE] = useState('');
-  const [mentalhealthscale, setMentalHealthScale] = useState('');
-  const [painScale, setPainScale] = useState('');
-  const [userName , setName] = useState("");
-  const [dateandtime, setDatandtime] = useState(new Date()); 
-
+const Player_input = ({ navigation }) => {
+  const [heartRate, setHeartRate] = useState([]);
+  const [hoursOfSleep, setHoursOfSleep] = useState([]);
+  const [qualityOfSleep, setQualityOfSleep] = useState([]);
+  const [rpe, setRPE] = useState([]);
+  const [mentalhealthscale, setMentalHealthScale] = useState([]);
+  const [painScale, setPainScale] = useState([]);
+  const [userName, setName] = useState('');
+  const [dateandtime, setDatandtime] = useState(new Date());
 
   const labels = ['Terrible', 'Poor', 'Okay', 'Good', 'Excellent'];
-  const Painlabels = ['None', ' Mild', ' Moderate', ' Severe'];
-  const RPElabels = [1,2,3,4,5,6,7,8,9,10];//['Very Light' ,'Light' , 'Moderate' , 'Vigorous' ,'Very hard' , 'Max Effort'];
+  const Painlabels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const RPElabels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   const user = auth.currentUser;
 
   const handleClick = (action) => {
-    if(!user){
+    if (!user) {
       console.error('User not Authenticated');
       return;
     }
     const surveyDataRef = ref(db, `Athletes/${user.uid}/surveyData`);
-    
+
+    // Append data to arrays
     const dataToSave = {
-      dateandtime: dateandtime.toISOString(),
-      heartRate,
-      hoursOfSleep,
-      qualityOfSleep,
-      rpe,
-      mentalhealthscale,
-      painScale,
-  };
-  set(surveyDataRef, dataToSave)
-    .then(() => {
-      console.log('Data saved to Firebase');
-      alert("Data has been saved");
-      navigation.navigate('Player');
-    })
-    .catch((error) => {
-      console.error('Error saving data to Firebase:', error);
-    });
+      heartRate: [...heartRate, heartRate],
+      hoursOfSleep: [...hoursOfSleep, hoursOfSleep],
+      qualityOfSleep: [...qualityOfSleep, qualityOfSleep],
+      rpe: [...rpe, rpe],
+      mentalhealthscale: [...mentalhealthscale, mentalhealthscale],
+      painScale: [...painScale, painScale],
+    };
+
+    set(surveyDataRef, dataToSave)
+      .then(() => {
+        console.log('Data saved to Firebase');
+        alert('Data has been saved');
+        navigation.navigate('Player');
+      })
+      .catch((error) => {
+        console.error('Error saving data to Firebase:', error);
+      });
   };
 
   return (
@@ -96,7 +92,7 @@ const Player_input = ({navigation}) => {
       />
       <SurveyQuestion
         question="Quality of Sleep:"
-        options={labels}
+        options={Painlabels}
         selectedOption={qualityOfSleep}
         onSelectOption={(value) => setQualityOfSleep(value)} 
       />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { sendPasswordResetEmail } from 'firebase/auth';
+import { getAuth,sendPasswordResetEmail } from 'firebase/auth';
 import { View, Text, StyleSheet, TextInput, Button } from 'react-native';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,7 +14,7 @@ function ForgotPassword() {
 
   const handleSubmit = async () => {
     try {
-      await sendPasswordResetEmail(database, email);
+      sendPasswordResetEmail(getAuth(),email);
       setMessage('Check your email for password reset instructions');
       // Redirect or navigate to another page here if needed using 'history'
       // history.push('/login'); // Example navigation to login page
