@@ -18,12 +18,6 @@ const AddClubScreen = () => {
         path: 'images',
       },
     };
-
-    ImagePicker.showImagePicker(options, (response) => {
-      if (response.uri) {
-        setClubLogo(response.uri);
-      }
-    });
   };
 
   const handleSaveClub = () => {
@@ -38,7 +32,7 @@ const AddClubScreen = () => {
 
     // Save clubName and clubLogo to the user's "clubs" table
     const db = getDatabase();
-    const userClubsRef = ref(db, `HealthProfessionals/${user.uid}/clubs`);
+    const userClubsRef = ref(db, `Managements/${user.uid}/clubs`);
     const newClubRef = push(userClubsRef);
 
     // Create a new club object with name and logo
@@ -52,7 +46,7 @@ const AddClubScreen = () => {
       .then(() => {
         console.log('Club data saved in the database.');
         // navigate to coach screen
-        navigation.navigate('CoachProfile');
+        navigation.navigate('Coach');
       })
       .catch((error) => {
         console.error('Error saving club data:', error);

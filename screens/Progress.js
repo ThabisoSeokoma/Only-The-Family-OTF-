@@ -14,7 +14,7 @@ import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
 const ProgressScreen = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.text}> Deez Nuts Chief </Text>
+        <Text style={styles.text}> The progress will be shown here</Text>
     </ScrollView>
   );
 };

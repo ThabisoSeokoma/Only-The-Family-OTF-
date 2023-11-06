@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, Platform, StyleSheet, ScrollView } from 'react-native';
 import FormInput from '../components/UserInput';
 import FormButton from '../components/SignLogButton';
-import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from '@firebase/auth';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -16,9 +16,24 @@ const LoginScreen = ({ navigation }) => {
       .then((userCredential) => {
         // User signed in successfully
         const user = userCredential.user;
-        console.log('User signed in:', user);
-        // You can navigate to another screen or perform additional actions here.
-        navigation.navigate('Player');
+
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            // User signed in successfully
+            console.log('User signed in:', user);
+
+            // Retrieve the user's role from Firebase or your database
+            // You need to implement this based on how you store the role during sign-up.
+            const userRole = user.role; // Replace with the actual code to get the role.
+
+            // Navigate based on the user's role
+            if (userRole === 'Athlete') {
+              navigation.navigate('Player');
+            } else {
+              navigation.navigate('Coach');
+            }
+          }
+        });
       })
       .catch((error) => {
         // Handle errors during login
