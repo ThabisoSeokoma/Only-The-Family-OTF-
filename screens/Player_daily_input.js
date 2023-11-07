@@ -2,43 +2,44 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput,TouchableWithoutFeedback ,Button ,TouchableOpacity,ScrollView} from 'react-native';
 import Slider from '@react-native-community/slider';
 import {set, ref ,push} from "firebase/database";
-<<<<<<< Updated upstream
 import { db , auth} from "../firebase";
 import DateTimePicker from '@react-native-community/datetimepicker';
-=======
-import { db ,auth} from "../firebase";
->>>>>>> Stashed changes
 import { onAuthStateChanged } from "firebase/auth";
 
-const SurveyQuestion = ({ question, options, selectedOption, onSelectOption }) => {
+const SurveyQuestion = ({ question, options, selectedOption, onSelectOption, isTextInput }) => {
   const handleOptionSelect = (option) => {
     onSelectOption(option);
-  };
-
-  const renderOptions = () => {
-    return options.map((option, index) => (
-      <TouchableOpacity
-        key={option}
-        style={[
-          styles.ratingOption,
-          selectedOption === option ? styles.selectedRatingOption : null,
-        ]}
-        onPress={() => handleOptionSelect(option)}
-      >
-        <Text style={styles.ratingText}>{option}</Text>
-      </TouchableOpacity>
-    ));
   };
 
   return (
     <View style={styles.questionContainer}>
       <Text style={styles.label}>{question}</Text>
       <View style={[styles.ratingContainer, { justifyContent: 'center' }]}>
-        {renderOptions()}
+        {isTextInput ? (
+          <TextInput
+            style={styles.textInput} // Define a style for the text input
+            value={selectedOption}
+            onChangeText={(value) => onSelectOption(value)}
+          />
+        ) : (
+          options.map((option, index) => (
+            <TouchableOpacity
+              key={option}
+              style={[
+                styles.ratingOption,
+                selectedOption === option ? styles.selectedRatingOption : null,
+              ]}
+              onPress={() => handleOptionSelect(option)}
+            >
+              <Text style={styles.ratingText}>{option}</Text>
+            </TouchableOpacity>
+          ))
+        )}
       </View>
     </View>
   );
 };
+
 
 const Player_input = ({navigation}) => {
   const [heartRate, setHeartRate] = useState('');
@@ -46,6 +47,7 @@ const Player_input = ({navigation}) => {
   const [qualityOfSleep, setQualityOfSleep] = useState('');
   const [rpe, setRPE] = useState('');
   const [mentalhealthscale, setMentalHealthScale] = useState('');
+  const [physicalwellness, setwellness] = useState('');
   const [painScale, setPainScale] = useState('');
   const [userName , setName] = useState("");
   const [dateandtime, setDatandtime] = useState(new Date()); 
@@ -53,7 +55,7 @@ const Player_input = ({navigation}) => {
 
   const labels = ['Terrible', 'Poor', 'Okay', 'Good', 'Excellent'];
   const Painlabels = ['None', ' Mild', ' Moderate', ' Severe'];
-  const RPElabels = [1,2,3,4,5,6,7,8,9,10];//['Very Light' ,'Light' , 'Moderate' , 'Vigorous' ,'Very hard' , 'Max Effort'];
+  const RPElabels = [1,2,3,4,5,6,7,8,9,10];
 
   const user = auth.currentUser;
 
@@ -65,7 +67,7 @@ const Player_input = ({navigation}) => {
     const surveyDataRef = ref(db, `Athletes/${user.uid}/surveyData`);
     
     const dataToSave = {
-      dateandtime: dateandtime.toISOString(),
+      //dateandtime: dateandtime.toISOString(),
       heartRate,
       hoursOfSleep,
       qualityOfSleep,
@@ -87,7 +89,28 @@ const Player_input = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Today's Survey</Text>
-      
+      <View style={styles.containertwo}>
+      <View style={styles.labelContainer}>
+        <Text style={styles.label}>Heart Rate(BPM):</Text>
+      </View>
+      <TextInput
+        style={styles.input}
+        onChangeText={(text) => setHeartRate(text)}
+        value={heartRate}
+      />
+    </View>
+        <SurveyQuestion
+        question="RPE:"
+        options={RPElabels}
+        selectedOption={rpe}
+        onSelectOption={(value) => setRPE(value)} 
+      />
+      <SurveyQuestion
+        question="Pain Scale:"
+        options={RPElabels}
+        selectedOption={painScale}
+        onSelectOption={(value) => setPainScale(value)} 
+      />
       <SurveyQuestion
         question="Hours of Sleep:"
         options={['<5', '5-7', '8-10', '>10']}
@@ -101,29 +124,16 @@ const Player_input = ({navigation}) => {
         onSelectOption={(value) => setQualityOfSleep(value)} 
       />
       <SurveyQuestion
-        question="Heart Rate (BPM):"
-        options={['Low', 'Normal', 'High']}
-        selectedOption={heartRate}
-        onSelectOption={(value) => setHeartRate(value)} 
-      />
-      <SurveyQuestion
-    
-        question="RPE:"
-        options={RPElabels}
-        selectedOption={rpe}
-        onSelectOption={(value) => setRPE(value)} 
-      />
-      <SurveyQuestion
-        question="Pain Scale:"
-        options={Painlabels}
-        selectedOption={painScale}
-        onSelectOption={(value) => setPainScale(value)} 
-      />
-      <SurveyQuestion
-        question="Overall Wellness:"
+        question="Mental Wellness:"
         options={labels}
         selectedOption={mentalhealthscale}
         onSelectOption={(value) => setMentalHealthScale(value)} 
+      />
+      <SurveyQuestion
+        question="Physical Health:"
+        options={labels}
+        selectedOption={physicalwellness}
+        onSelectOption={(value) => setwellness(value)} 
       />
       <View style={styles.buttonContainer}>
       <Button
@@ -186,6 +196,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 30,
+    width:70,
+    height:70,
     alignItems: 'center',
     
   },
@@ -193,7 +205,22 @@ const styles = StyleSheet.create({
     width: 200,  
     height: 200,  
   },
-  
+  containertwo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  labelContainer: {
+    flex: 1,
+  },
+  input: {
+    flex: 2, 
+    width:20,
+    height: 35,
+    borderColor: 'gray',
+    borderWidth: 3,
+    borderRadius: 5,
+    paddingLeft: 10,
+  },
 });
 
 export default Player_input;
