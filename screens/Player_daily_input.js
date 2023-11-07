@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { StyleSheet, View, Text, TextInput,TouchableWithoutFeedback ,Button ,TouchableOpacity,ScrollView} from 'react-native';
 import Slider from '@react-native-community/slider';
-import {set, ref ,push} from "firebase/database";
+import {get,set, ref ,push} from "firebase/database";
+
 import { db , auth} from "../firebase";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { onAuthStateChanged } from "firebase/auth";
@@ -37,12 +38,12 @@ const SurveyQuestion = ({ question, options, selectedOption, onSelectOption }) =
 };
 
 const Player_input = ({ navigation }) => {
-  const [heartRate, setHeartRate] = useState([]);
-  const [hoursOfSleep, setHoursOfSleep] = useState([]);
-  const [qualityOfSleep, setQualityOfSleep] = useState([]);
-  const [rpe, setRPE] = useState([]);
-  const [mentalhealthscale, setMentalHealthScale] = useState([]);
-  const [painScale, setPainScale] = useState([]);
+  const [heartRate, setHeartRate] = useState('');
+  const [hoursOfSleep, setHoursOfSleep] = useState('');
+  const [qualityOfSleep, setQualityOfSleep] = useState('');
+  const [rpe, setRPE] = useState('');
+  const [mentalhealthscale, setMentalHealthScale] = useState('');
+  const [painScale, setPainScale] = useState('');
   const [userName, setName] = useState('');
   const [dateandtime, setDatandtime] = useState(new Date());
 
@@ -51,35 +52,71 @@ const Player_input = ({ navigation }) => {
   const RPElabels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   const user = auth.currentUser;
+  const userSurveyRef = ref(db, `DataToPlot/${user.uid}`);
+  useEffect(() => {
+    if (user) {
+      // Fetch user's survey data and initialize the state with the existing values
+      
+      // Fetch the user's data and update the state variables accordingly
+      get(userSurveyRef)
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            setHeartRate(data.heartRate || '');
+            setHoursOfSleep(data.hoursOfSleep || '');
+            setQualityOfSleep(data.qualityOfSleep || '');
+            setRPE(data.rpe || '');
+            setMentalHealthScale(data.mentalhealthscale || '');
+            setPainScale(data.painScale || '');
+          }
+        });
+    }
+  }, [user]);
 
-  const handleClick = (action) => {
+
+  const handleClick = async () => {
     if (!user) {
       console.error('User not Authenticated');
       return;
     }
-    const surveyDataRef = ref(db, `Athletes/${user.uid}/surveyData`);
+    //const surveyDataRef = ref(db, `DataToPlot/${user.uid}`);
 
-    // Append data to arrays
-    const dataToSave = {
-      heartRate: [...heartRate, heartRate],
-      hoursOfSleep: [...hoursOfSleep, hoursOfSleep],
-      qualityOfSleep: [...qualityOfSleep, qualityOfSleep],
-      rpe: [...rpe, rpe],
-      mentalhealthscale: [...mentalhealthscale, mentalhealthscale],
-      painScale: [...painScale, painScale],
-    };
+ 
+  try {
+    //const surveyDataRef = ref(db, `DataToPlot/${user.uid}`);
+    get(userSurveyRef)
+    .then((snapshot) => {
+      const data = snapshot.val() || {};
+      // Append new values to the arrays
+      data.heartRate = data.heartRate || [];
+      data.heartRate.push(heartRate);
+      data.hoursOfSleep = data.hoursOfSleep || [];
+      data.hoursOfSleep.push(hoursOfSleep);
+      data.qualityOfSleep = data.qualityOfSleep || [];
+      data.qualityOfSleep.push(qualityOfSleep);
+      data.rpe = data.rpe || [];
+      data.rpe.push(rpe);
+      data.mentalhealthscale = data.mentalhealthscale || [];
+      data.mentalhealthscale.push(mentalhealthscale);
+      data.painScale = data.painScale || [];
+      data.painScale.push(painScale);
+    
 
-    set(surveyDataRef, dataToSave)
-      .then(() => {
-        console.log('Data saved to Firebase');
-        alert('Data has been saved');
-        navigation.navigate('Player');
-      })
-      .catch((error) => {
-        console.error('Error saving data to Firebase:', error);
-      });
+    // Write the modified data back to the database
+    set(userSurveyRef, data)
+    .then(() => {
+      console.log('Data saved to the Realtime Database');
+      alert('Data has been saved');
+      navigation.navigate('Player');
+    })
+    .catch((error) => {
+      console.error('Error saving data to the Realtime Database:', error);
+    });
+    });
+  } catch (error) {
+  console.error('Error saving data to the Realtime Database:', error);
+  }
   };
-
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Today's Survey</Text>
@@ -96,12 +133,19 @@ const Player_input = ({ navigation }) => {
         selectedOption={qualityOfSleep}
         onSelectOption={(value) => setQualityOfSleep(value)} 
       />
-      <SurveyQuestion
-        question="Heart Rate (BPM):"
-        options={['Low', 'Normal', 'High']}
-        selectedOption={heartRate}
-        onSelectOption={(value) => setHeartRate(value)} 
-      />
+    
+     <View style={styles.questionContainer}>
+      <Text style={styles.label}>Heart Rate:</Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+        placeholder="Enter Heart Rate (BPM)"
+        //value={heartRate}
+        onChangeText={(text) => setHeartRate(text)}
+        
+        style={styles.textInput}
+        />
+      </View>
+    </View>
       <SurveyQuestion
     
         question="RPE:"
@@ -189,7 +233,26 @@ const styles = StyleSheet.create({
     width: 200,  
     height: 200,  
   },
-  
+  questionContainer: {
+    marginBottom: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  label: {
+    fontSize: 17.5,
+  },
+  inputContainer: {
+    flex: 1, // This will make the input take up the remaining space
+    marginLeft: 10, // Add some spacing between the text and input
+  },
+  textInput: {
+    height: 40, // Update the height to make it larger
+    fontSize: 16, // Update the font size
+    borderWidth: 1, // Add a border
+    borderColor: 'gray', // Border color
+    paddingLeft: 10, // Add some padding inside the input
+  },
 });
 
 export default Player_input;
