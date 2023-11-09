@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView } from 'rea
 import { useNavigation } from '@react-navigation/native';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
+import { windowHeight } from '../utils/screenDimensions';
 
 const CoachProfile = () => {
   const navigation = useNavigation();
@@ -21,7 +22,7 @@ const CoachProfile = () => {
     const userId =  user.uid;
 
     // Get a reference to the user's clubs
-    const userClubsRef = ref(db, `HealthProfessionals/${userId}/clubs`);
+    const userClubsRef = ref(db, `Managements/${userId}/clubs`);
 
     // Listen for changes in the clubs data
     onValue(userClubsRef, (snapshot) => {
@@ -52,6 +53,7 @@ const CoachProfile = () => {
           key={club.id}
           style={styles.clubContainer}
           onPress={() => {
+            navigation.navigate('ClubProfile')
             // Handle club click (e.g., navigate to club details screen)
           }}>
           <Text style={styles.clubName}>{club.name}</Text>

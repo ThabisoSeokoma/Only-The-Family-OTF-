@@ -39,7 +39,7 @@ const SignupScreen = ({ navigation }) => {
   
         // Store additional user information in the Realtime Database
         const db = getDatabase();
-        const node = role === 'HealthProfessional' ? 'HealthProfessionals' : 'Athletes';
+        const node = role === 'Management' ? 'Managements' : 'Athletes';
 
         const userRef = ref(db, `${node}/${user.uid}`);
         set(userRef, {
@@ -52,13 +52,11 @@ const SignupScreen = ({ navigation }) => {
             // Profile updated successfully
             console.log('User information stored in Realtime Database:', user);
             if (role == 'Athlete') {
-              navigation.navigate('Player_inputs');
+              navigation.navigate('Player');
             }
             else{
               navigation.navigate('Coach');
             }
-  
-            // You can navigate to another screen or perform additional actions here.
           })
           .catch((error) => {
             console.error('Error storing user information:', error);
@@ -144,16 +142,6 @@ const SignupScreen = ({ navigation }) => {
         </Picker>
 
 
-      {/* Add ID input */}
-      <FormInput
-        labelValue={id}
-        onChangeText={(userId) => setId(userId)}
-        placeholderText="ID"
-        keyboardType="numeric"
-        iconType="user"
-        autoCapitalize="none"
-        autoCorrect={false}
-      />
 
 
       {/* Email input */}
