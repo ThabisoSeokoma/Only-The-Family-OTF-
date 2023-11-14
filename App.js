@@ -19,9 +19,9 @@ import scheduleDefaultNotifications from './screens/notify.js';
 const AppStack = createNativeStackNavigator();
 
 const App = () => {
-  useEffect(() => {
-    scheduleDefaultNotifications(navigation);
-  }, []);
+  // useEffect(() => {
+  //   scheduleDefaultNotifications(navigation);
+  // }, []);
   return (
     <NavigationContainer>
       <AppStack.Navigator headerMode="none">
