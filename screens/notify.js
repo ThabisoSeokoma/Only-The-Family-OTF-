@@ -10,7 +10,7 @@ const scheduleDefaultNotifications = async (navigation) => {
   ];
 
   for (const notificationTime of notificationTimes) {
-    if (notificationTime ==  today) {
+    if (notificationTime <  today) {
       console.log('Checking notification time:', notificationTime);      
         if (notificationTime > today) {
           console.log('Scheduling notification for:', notificationTime);
