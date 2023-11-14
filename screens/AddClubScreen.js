@@ -4,9 +4,11 @@ import ImagePicker from '@react-native-picker/picker';
 import { getAuth } from 'firebase/auth';
 import { getDatabase, ref, push, set } from 'firebase/database';
 import { launchImageLibrary } from '@react-native-picker/picker'; // Import the correct function
+import { useNavigation } from 'react-router-dom';
 
 
 const AddClubScreen = () => {
+  const navigation = useNavigation();
   const [clubName, setClubName] = useState('');
   const [clubLogo, setClubLogo] = useState(null);
 
