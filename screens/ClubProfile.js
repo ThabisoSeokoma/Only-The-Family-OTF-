@@ -10,9 +10,9 @@ const ClubProfile = () => {
   const [clubId, setClubId] = useState(''); // Add clubId state
 
   const handleAddPlayer = () => {
-    navigation.navigate('AddPlayer'); // Navigate to the AddPlayer screen
+    navigation.navigate('AddPlayer', { clubId: clubId });
   };
-
+  
   const auth = getAuth();
   const user = auth.currentUser;
 
@@ -20,10 +20,10 @@ const ClubProfile = () => {
     // Get a reference to the database
     const db = getDatabase();
 
-    // Replace 'yourUserId' with the actual user ID of the coach
+    // The actual user ID of the coach
     const userId = user.uid;
 
-    // Replace 'clubIdPath' with the actual path to the club ID in your database
+    // Path to the club ID in your database
     const clubIdPath = `Managements/${user.uid}/clubs`; // Modify this path accordingly
 
     // Get a reference to the user's clubs
@@ -39,7 +39,7 @@ const ClubProfile = () => {
         setClubId(firstClubId); // Set the clubId state with the first club ID
 
         // Now, you can use the clubId to fetch club players
-        const clubPlayersRef = ref(db, `Management/${user.uid}/clubs/${firstClubId}/club_players`);
+        const clubPlayersRef = ref(db, `Managements/${user.uid}/clubs/${firstClubId}/club_players`);
 
         // Listen for changes in the club players data
         onValue(clubPlayersRef, (playersSnapshot) => {
@@ -143,6 +143,12 @@ const styles = StyleSheet.create({
         color: 'white',
         fontFamily: 'Roboto',
         textAlign: 'center',
+      },
+      playerName: {
+        fontSize: 18,
+        fontWeight: '500',
+        color: 'white',
+        fontFamily: 'Roboto',
       },
 });
 

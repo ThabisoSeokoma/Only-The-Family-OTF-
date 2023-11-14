@@ -1,36 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Button, FlatList } from 'react-native';
-import { getDatabase, ref, get, query, orderByChild, set } from 'firebase/database';
+import { getDatabase, ref, get, query, orderByChild, set, push } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 import { useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+
 
 const AddPlayerScreen = () => {
+  const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [allAthletes, setAllAthletes] = useState([]);
   const [user, setUser] = useState(null);
+
   const route = useRoute(); // Get the route object
 
   // Define the db variable
   const db = getDatabase();
 
   const handleAddPlayerToClub = (selectedPlayer) => {
+    // Ensure the user is authenticated
+    const auth = getAuth();
+    const user = auth.currentUser;
+  
+    if (!user) {
+      console.error('User not authenticated');
+      return;
+    }
+
     // Get the club ID from the route or wherever it is available
     const clubId = route.params.clubId; // Adjust this based on your routing mechanism
 
     // Reference to the "Management/clubs/club_players" path
-    const clubPlayersRef = ref(db, `Management/clubs/${clubId}/club_players`);
+    const clubPlayersRef = ref(db, `Managements/${user.uid}/clubs/${clubId}/club_players`);
+    const newPlayerRef = push(clubPlayersRef);
 
     // Define the data you want to save (you may need to adjust this based on your player data structure)
     const playerData = {
       name: selectedPlayer.name,
-      // Add other player data fields as needed
+      surname: selectedPlayer.surname,
     };
 
     // Use the set method to add the player to the club_players path
-    set(clubPlayersRef, playerData)
+    set(newPlayerRef, playerData)
       .then(() => {
         console.log(`Player ${selectedPlayer.name} added to club.`);
+        alert(`Player ${selectedPlayer.name} added to club.`);
+        const allPlayersRef = ref(db, `Managements/${user.uid}/clubs/${clubId}/club_players/AllPlayers`); // Adjust the path as needed
+      
+        set(allPlayersRef, { [selectedPlayer.id]: playerData });
+        navigation.navigate('ClubProfile');
       })
       .catch((error) => {
         console.error('Error adding player to club:', error);
