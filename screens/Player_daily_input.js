@@ -22,7 +22,7 @@ const SurveyQuestion = ({ question, options, selectedOption, onSelectOption, isT
             value={selectedOption}
             onChangeText={(value) => onSelectOption(value)}
           />
-        ) : (
+          ) : (
           options.map((option, index) => (
             <TouchableOpacity
               key={option}
@@ -60,9 +60,6 @@ const Player_input = ({ navigation }) => {
   const userSurveyRef = ref(db, `DataToPlot/${user.uid}`);
   useEffect(() => {
     if (user) {
-      // Fetch user's survey data and initialize the state with the existing values
-      
-      // Fetch the user's data and update the state variables accordingly
       get(userSurveyRef)
         .then((snapshot) => {
           if (snapshot.exists()) {
@@ -84,8 +81,6 @@ const Player_input = ({ navigation }) => {
       console.error('User not Authenticated');
       return;
     }
-    //const surveyDataRef = ref(db, `DataToPlot/${user.uid}`);
-
  
   try {
     //const surveyDataRef = ref(db, `DataToPlot/${user.uid}`);
@@ -106,8 +101,6 @@ const Player_input = ({ navigation }) => {
       data.painScale = data.painScale || [];
       data.painScale.push(painScale);
     
-
-    // Write the modified data back to the database
     set(userSurveyRef, data)
     .then(() => {
       console.log('Data saved to the Realtime Database');
@@ -125,15 +118,15 @@ const Player_input = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Today's Survey</Text>
-      <View style={styles.containertwo}>
-      <View style={styles.labelContainer}>
-        <Text style={styles.label}>Heart Rate(BPM):</Text>
+      <View style={styles.questionContainer}>
+      <Text style={styles.label}>Heart Rate:</Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+        placeholder="Enter Heart Rate (BPM)"
+        onChangeText={(text) => setHeartRate(text)} 
+        style={styles.textInput}
+        />
       </View>
-      <TextInput
-        style={styles.input}
-        onChangeText={(text) => setHeartRate(text)}
-        value={heartRate}
-      />
     </View>
         <SurveyQuestion
         question="RPE:"
@@ -149,9 +142,9 @@ const Player_input = ({ navigation }) => {
       />
       <SurveyQuestion
         question="Hours of Sleep:"
-        options={['<5', '5-7', '8-10', '>10']}
+        options={Painlabels}
         selectedOption={hoursOfSleep}
-        onSelectOption={(value) => setHoursOfSleep(value)}
+        onSelectOption={(value) => setHoursOfSleep(value)} 
       />
       <SurveyQuestion
         question="Quality of Sleep:"
@@ -159,34 +152,8 @@ const Player_input = ({ navigation }) => {
         selectedOption={qualityOfSleep}
         onSelectOption={(value) => setQualityOfSleep(value)} 
       />
-    
-     <View style={styles.questionContainer}>
-      <Text style={styles.label}>Heart Rate:</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-        placeholder="Enter Heart Rate (BPM)"
-        //value={heartRate}
-        onChangeText={(text) => setHeartRate(text)}
-        
-        style={styles.textInput}
-        />
-      </View>
-    </View>
       <SurveyQuestion
-    
-        question="RPE:"
-        options={RPElabels}
-        selectedOption={rpe}
-        onSelectOption={(value) => setRPE(value)} 
-      />
-      <SurveyQuestion
-        question="Pain Scale:"
-        options={Painlabels}
-        selectedOption={painScale}
-        onSelectOption={(value) => setPainScale(value)} 
-      />
-      <SurveyQuestion
-        question="Overall Wellness:"
+        question="Mental Wellness:"
         options={labels}
         selectedOption={mentalhealthscale}
         onSelectOption={(value) => setMentalHealthScale(value)} 
@@ -215,6 +182,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'left',
     padding: 20,
+    height: 500,
   },
   heading: {
     fontSize: 24,
@@ -277,15 +245,15 @@ const styles = StyleSheet.create({
     fontSize: 17.5,
   },
   inputContainer: {
-    flex: 1, // This will make the input take up the remaining space
-    marginLeft: 10, // Add some spacing between the text and input
+    flex: 1, 
+    marginLeft: 10, 
   },
   textInput: {
-    height: 40, // Update the height to make it larger
-    fontSize: 16, // Update the font size
-    borderWidth: 1, // Add a border
-    borderColor: 'gray', // Border color
-    paddingLeft: 10, // Add some padding inside the input
+    height: 40, 
+    fontSize: 16, 
+    borderWidth: 1, 
+    borderColor: 'gray',
+    paddingLeft: 10, 
   },
 });
 
