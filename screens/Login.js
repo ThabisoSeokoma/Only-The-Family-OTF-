@@ -27,11 +27,11 @@ const LoginScreen = ({ navigation }) => {
             const userRole = user.role; // Replace with the actual code to get the role.
 
             // Navigate based on the user's role
-            if (userRole === 'Athlete') {
+           // if (userRole === 'Athlete') {
               navigation.navigate('Player');
-            } else {
-              navigation.navigate('Coach');
-            }
+           // } else {
+            //  navigation.navigate('Coach');
+           // }
           }
         });
       })
