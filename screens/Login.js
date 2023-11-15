@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, Image, Platform, StyleSheet, ScrollView }
 import FormInput from '../components/UserInput';
 import FormButton from '../components/SignLogButton';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from '@firebase/auth';
+import { getDatabase, ref, set, get } from 'firebase/database';
+
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -16,6 +18,7 @@ const LoginScreen = ({ navigation }) => {
       .then((userCredential) => {
         // User signed in successfully
         const user = userCredential.user;
+        const db = getDatabase();
 
         onAuthStateChanged(auth, (user) => {
           if (user) {
@@ -24,14 +27,37 @@ const LoginScreen = ({ navigation }) => {
 
             // Retrieve the user's role from Firebase or your database
             // You need to implement this based on how you store the role during sign-up.
-            const userRole = user.role; // Replace with the actual code to get the role.
+            const userId = user.uid;
 
-            // Navigate based on the user's role
-            if (userRole === 'Athlete') {
-              navigation.navigate('Player');
-            } else {
-              navigation.navigate('Coach');
-            }
+            const athleteRef = ref(db, `Athletes/${userId}`);
+            const managementRef = ref(db, `Managements/${userId}`);
+
+            // Check if the user exists in 'Athletes' collection
+            get(athleteRef)
+              .then((athleteSnapshot) => {
+                if (athleteSnapshot.exists()) {
+                  console.log('User is an athlete');
+                  navigation.navigate('Player');
+                } else {
+                  // Check if the user exists in 'Managements' collection
+                  get(managementRef)
+                    .then((managementSnapshot) => {
+                      if (managementSnapshot.exists()) {
+                        console.log('User is in management');
+                        navigation.navigate('Coach');
+                      } else {
+                        console.log('User role not identified');
+                        // Handle the case when the user is not in either collection
+                      }
+                    })
+                    .catch((error) => {
+                      console.error('Error fetching management data:', error);
+                    });
+                }
+              })
+              .catch((error) => {
+                console.error('Error fetching athlete data:', error);
+              });
           }
         });
       })

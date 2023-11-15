@@ -1,5 +1,5 @@
 import React, { useState,useEffect } from 'react';
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import LoginScreen from "./screens/Login";
@@ -15,13 +15,14 @@ import ClubProfile from "./screens/ClubProfile";
 import AddPlayerScreen from "./screens/AddPlayerScreen";
 import scheduleDefaultNotifications from './screens/notify.js';
 
-
 const AppStack = createNativeStackNavigator();
 
 const App = () => {
+
   useEffect(() => {
-    scheduleDefaultNotifications(navigation);
+    scheduleDefaultNotifications();
   }, []);
+  
   return (
     <NavigationContainer>
       <AppStack.Navigator headerMode="none">
