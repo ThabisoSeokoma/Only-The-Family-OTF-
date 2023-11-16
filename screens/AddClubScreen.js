@@ -1,26 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
-import ImagePicker from '@react-native-picker/picker';
 import { getAuth } from 'firebase/auth';
 import { getDatabase, ref, push, set } from 'firebase/database';
-import { launchImageLibrary } from '@react-native-picker/picker'; // Import the correct function
-import { useNavigation } from 'react-router-dom';
+import { useNavigation } from '@react-navigation/native';
 
 
 const AddClubScreen = () => {
   const navigation = useNavigation();
   const [clubName, setClubName] = useState('');
-  const [clubLogo, setClubLogo] = useState(null);
-
-  const selectImage = () => {
-    const options = {
-      title: 'Select Club Logo',
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-  };
 
   const handleSaveClub = () => {
     // Ensure the user is authenticated
@@ -40,7 +27,6 @@ const AddClubScreen = () => {
     // Create a new club object with name and logo
     const newClub = {
       name: clubName,
-      logo: clubLogo,
     };
 
     // Set the club data in the Realtime Database
@@ -58,7 +44,7 @@ const AddClubScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.heading}>Add Club</Text>
+      <Text style={styles.heading}>Add Team</Text>
 
       {/* Club Name Input */}
       <TextInput
@@ -67,21 +53,6 @@ const AddClubScreen = () => {
         onChangeText={(text) => setClubName(text)}
         value={clubName}
       />
-
-      {/* Club Logo Image */}
-      {clubLogo && (
-        <Image
-          source={{ uri: clubLogo }}
-          style={styles.logo}
-        />
-      )}
-
-      {/* Button to Select Club Logo */}
-      <TouchableOpacity
-        style={styles.uploadButton}
-        onPress={selectImage}>
-        <Text style={styles.uploadButtonText}>Select Club Logo</Text>
-      </TouchableOpacity>
 
       {/* Button to Save Club */}
       <TouchableOpacity

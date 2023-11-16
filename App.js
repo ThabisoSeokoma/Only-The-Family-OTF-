@@ -1,5 +1,5 @@
-import React, { useState,useEffect } from 'react';
-import { NavigationContainer } from "@react-navigation/native";
+import { useState,useEffect } from 'react';
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import LoginScreen from "./screens/Login";
@@ -13,8 +13,8 @@ import DetailsScreen from "./screens/Progress";
 import ForgotPassWord from "./screens/ForgotPassWord";
 import ClubProfile from "./screens/ClubProfile";
 import AddPlayerScreen from "./screens/AddPlayerScreen";
-import scheduleDefaultNotifications from './screens/notify.js';
-
+import UpdateProfileScreen from './screens/UpdateProfile';
+//import scheduleDefaultNotifications from './screens/notify.js';
 
 const AppStack = createNativeStackNavigator();
 
@@ -36,6 +36,7 @@ const App = () => {
         <AppStack.Screen name ="Forgot" component = {ForgotPassWord} />
         <AppStack.Screen name="ClubProfile" component={ClubProfile}/>
         <AppStack.Screen name="AddPlayer" component={AddPlayerScreen}/>
+        <AppStack.Screen name="Update" component={UpdateProfileScreen}/>
       </AppStack.Navigator>
     </NavigationContainer>
   );

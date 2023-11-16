@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, Platform, StyleSheet, ScrollView } from 'react-native';
 import FormInput from '../components/UserInput';
 import FormButton from '../components/SignLogButton';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from '@firebase/auth';
+import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
+import { getDatabase, ref, onValue } from 'firebase/database';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -10,30 +11,15 @@ const LoginScreen = ({ navigation }) => {
 
   const auth = getAuth();
 
-  // Function to handle user login
   const loginWithEmailPassword = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // User signed in successfully
         const user = userCredential.user;
-
-        onAuthStateChanged(auth, (user) => {
-          if (user) {
-            // User signed in successfully
-            console.log('User signed in:', user);
-
-            // Retrieve the user's role from Firebase or your database
-            // You need to implement this based on how you store the role during sign-up.
-            const userRole = user.role; // Replace with the actual code to get the role.
-
-            // Navigate based on the user's role
-           // if (userRole === 'Athlete') {
-              navigation.navigate('Player');
-           // } else {
-            //  navigation.navigate('Coach');
-           // }
-          }
-        });
+        console.log('User signed in:', user);
+        
+        // Check user role after successful login
+        checkUserRole(user.uid);
       })
       .catch((error) => {
         // Handle errors during login
@@ -42,6 +28,23 @@ const LoginScreen = ({ navigation }) => {
         console.error('Error signing in:', errorCode, errorMessage);
         // You can display an error message to the user here.
       });
+  };
+
+  // Function to check user role and navigate accordingly
+  const checkUserRole = (userId) => {
+    const db = getDatabase();
+    const userRef = ref(db, `Athletes/${userId}`);
+
+    onValue(userRef, (snapshot) => {
+      const userData = snapshot.val();
+      if (userData) {
+        // User is an athlete
+        navigation.navigate('Player');
+      } else {
+        // User is not an athlete (assume coach)
+        navigation.navigate('Coach');
+      }
+    });
   };
 
   return (
