@@ -57,8 +57,6 @@ const SignupScreen = ({ navigation }) => {
             else{
               navigation.navigate('Coach');
             }
-  
-            // You can navigate to another screen or perform additional actions here.
           })
           .catch((error) => {
             console.error('Error storing user information:', error);

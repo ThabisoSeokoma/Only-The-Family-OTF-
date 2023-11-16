@@ -1,107 +1,134 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput,TouchableWithoutFeedback ,Button ,TouchableOpacity} from 'react-native';
+import React, { useState,useEffect } from 'react';
+import { StyleSheet, View, Text, TextInput,TouchableWithoutFeedback ,Button ,TouchableOpacity,ScrollView} from 'react-native';
 import Slider from '@react-native-community/slider';
-import {set, ref ,push} from "firebase/database";
+import {get,set, ref ,push} from "firebase/database";
+
 import { db , auth} from "../firebase";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { onAuthStateChanged } from "firebase/auth";
 
-const SurveyQuestion = ({ question, options, selectedOption, onSelectOption }) => {
+const SurveyQuestion = ({ question, options, selectedOption, onSelectOption, isTextInput }) => {
   const handleOptionSelect = (option) => {
     onSelectOption(option);
-  };
-
-  const renderOptions = () => {
-    return options.map((option, index) => (
-      <TouchableOpacity
-        key={option}
-        style={[
-          styles.ratingOption,
-          selectedOption === option ? styles.selectedRatingOption : null,
-        ]}
-        onPress={() => handleOptionSelect(option)}
-      >
-        <Text style={styles.ratingText}>{option}</Text>
-      </TouchableOpacity>
-    ));
   };
 
   return (
     <View style={styles.questionContainer}>
       <Text style={styles.label}>{question}</Text>
       <View style={[styles.ratingContainer, { justifyContent: 'center' }]}>
-        {renderOptions()}
+        {isTextInput ? (
+          <TextInput
+            style={styles.textInput} // Define a style for the text input
+            value={selectedOption}
+            onChangeText={(value) => onSelectOption(value)}
+          />
+          ) : (
+          options.map((option, index) => (
+            <TouchableOpacity
+              key={option}
+              style={[
+                styles.ratingOption,
+                selectedOption === option ? styles.selectedRatingOption : null,
+              ]}
+              onPress={() => handleOptionSelect(option)}
+            >
+              <Text style={styles.ratingText}>{option}</Text>
+            </TouchableOpacity>
+          ))
+        )}
       </View>
     </View>
   );
 };
 
-const Player_input = ({navigation}) => {
+const Player_input = ({ navigation }) => {
   const [heartRate, setHeartRate] = useState('');
   const [hoursOfSleep, setHoursOfSleep] = useState('');
   const [qualityOfSleep, setQualityOfSleep] = useState('');
   const [rpe, setRPE] = useState('');
   const [mentalhealthscale, setMentalHealthScale] = useState('');
+  const [physicalwellness, setwellness] = useState('');
   const [painScale, setPainScale] = useState('');
-  const [userName , setName] = useState("");
-  const [dateandtime, setDatandtime] = useState(new Date()); 
-
+  const [userName, setName] = useState('');
+  const [dateandtime, setDatandtime] = useState(new Date());
 
   const labels = ['Terrible', 'Poor', 'Okay', 'Good', 'Excellent'];
-  const Painlabels = ['None', ' Mild', ' Moderate', ' Severe'];
-  const RPElabels = ['Very Light' ,'Light' , 'Moderate' , 'Vigorous' ,'Very hard' , 'Max Effort'];
+  const Painlabels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const RPElabels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   const user = auth.currentUser;
+  const userSurveyRef = ref(db, `DataToPlot/${user.uid}`);
+  useEffect(() => {
+    if (user) {
+      get(userSurveyRef)
+        .then((snapshot) => {
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            setHeartRate(data.heartRate || '');
+            setHoursOfSleep(data.hoursOfSleep || '');
+            setQualityOfSleep(data.qualityOfSleep || '');
+            setRPE(data.rpe || '');
+            setMentalHealthScale(data.mentalhealthscale || '');
+            setPainScale(data.painScale || '');
+          }
+        });
+    }
+  }, [user]);
 
-  const handleClick = (action) => {
-    if(!user){
+
+  const handleClick = async () => {
+    if (!user) {
       console.error('User not Authenticated');
       return;
     }
-    const surveyDataRef = ref(db, `Athletes/${user.uid}/surveyData`);
+ 
+  try {
+    //const surveyDataRef = ref(db, `DataToPlot/${user.uid}`);
+    get(userSurveyRef)
+    .then((snapshot) => {
+      const data = snapshot.val() || {};
+      // Append new values to the arrays
+      data.heartRate = data.heartRate || [];
+      data.heartRate.push(heartRate);
+      data.hoursOfSleep = data.hoursOfSleep || [];
+      data.hoursOfSleep.push(hoursOfSleep);
+      data.qualityOfSleep = data.qualityOfSleep || [];
+      data.qualityOfSleep.push(qualityOfSleep);
+      data.rpe = data.rpe || [];
+      data.rpe.push(rpe);
+      data.mentalhealthscale = data.mentalhealthscale || [];
+      data.mentalhealthscale.push(mentalhealthscale);
+      data.painScale = data.painScale || [];
+      data.painScale.push(painScale);
     
-    const dataToSave = {
-      dateandtime: dateandtime.toISOString(),
-      heartRate,
-      hoursOfSleep,
-      qualityOfSleep,
-      rpe,
-      mentalhealthscale,
-      painScale,
-  };
-  set(surveyDataRef, dataToSave)
+    set(userSurveyRef, data)
     .then(() => {
-      console.log('Data saved to Firebase');
-      alert("Data has been saved");
+      console.log('Data saved to the Realtime Database');
+      alert('Data has been saved');
       navigation.navigate('Player');
     })
     .catch((error) => {
-      console.error('Error saving data to Firebase:', error);
+      console.error('Error saving data to the Realtime Database:', error);
     });
+    });
+  } catch (error) {
+  console.error('Error saving data to the Realtime Database:', error);
+  }
   };
-
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Today's Survey</Text>
-      <SurveyQuestion
-        question="Hours of Sleep:"
-        options={['<5', '5-7', '8-10', '>10']}
-        selectedOption={hoursOfSleep}
-        onSelectOption={(value) => setHoursOfSleep(value)}
-      />
-      <SurveyQuestion
-        question="Quality of Sleep:"
-        options={labels}
-        selectedOption={qualityOfSleep}
-        onSelectOption={(value) => setQualityOfSleep(value)} 
-      />
-      <SurveyQuestion
-        question="Heart Rate (BPM):"
-        options={['Low', 'Normal', 'High']}
-        selectedOption={heartRate}
-        onSelectOption={(value) => setHeartRate(value)} 
-      />
-      <SurveyQuestion
+      <View style={styles.questionContainer}>
+      <Text style={styles.label}>Heart Rate:</Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+        placeholder="Enter Heart Rate (BPM)"
+        onChangeText={(text) => setHeartRate(text)} 
+        style={styles.textInput}
+        />
+      </View>
+    </View>
+        <SurveyQuestion
         question="RPE:"
         options={RPElabels}
         selectedOption={rpe}
@@ -109,15 +136,33 @@ const Player_input = ({navigation}) => {
       />
       <SurveyQuestion
         question="Pain Scale:"
-        options={Painlabels}
+        options={RPElabels}
         selectedOption={painScale}
         onSelectOption={(value) => setPainScale(value)} 
       />
       <SurveyQuestion
-        question="Overall Wellness:"
+        question="Hours of Sleep:"
+        options={Painlabels}
+        selectedOption={hoursOfSleep}
+        onSelectOption={(value) => setHoursOfSleep(value)} 
+      />
+      <SurveyQuestion
+        question="Quality of Sleep:"
+        options={Painlabels}
+        selectedOption={qualityOfSleep}
+        onSelectOption={(value) => setQualityOfSleep(value)} 
+      />
+      <SurveyQuestion
+        question="Mental Wellness:"
         options={labels}
         selectedOption={mentalhealthscale}
         onSelectOption={(value) => setMentalHealthScale(value)} 
+      />
+      <SurveyQuestion
+        question="Physical Health:"
+        options={labels}
+        selectedOption={physicalwellness}
+        onSelectOption={(value) => setwellness(value)} 
       />
       <View style={styles.buttonContainer}>
       <Button
@@ -126,7 +171,7 @@ const Player_input = ({navigation}) => {
         style={styles.customButton}
       />
       </View>
-    
+  
     </View>
   );
 };
@@ -137,6 +182,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'left',
     padding: 20,
+    height: 500,
   },
   heading: {
     fontSize: 24,
@@ -154,8 +200,9 @@ const styles = StyleSheet.create({
   },
   ratingContainer: {
     flexDirection: 'row',
-    alignItems : 'right',
-    justifyContent: 'center',
+    alignItems : 'center',
+    justifyContent: 'flex-start',
+    flexWrap: 'wrap',
     padding: 10,
   },
   ratingOption: {
@@ -166,7 +213,8 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 10,
+    marginHorizontal: 2,
+    marginBottom: 5,
   },
   selectedRatingOption: {
     borderColor: 'gold',
@@ -178,6 +226,8 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 30,
+    width:70,
+    height:70,
     alignItems: 'center',
     
   },
@@ -185,7 +235,26 @@ const styles = StyleSheet.create({
     width: 200,  
     height: 200,  
   },
-  
+  questionContainer: {
+    marginBottom: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  label: {
+    fontSize: 17.5,
+  },
+  inputContainer: {
+    flex: 1, 
+    marginLeft: 10, 
+  },
+  textInput: {
+    height: 40, 
+    fontSize: 16, 
+    borderWidth: 1, 
+    borderColor: 'gray',
+    paddingLeft: 10, 
+  },
 });
 
 export default Player_input;
