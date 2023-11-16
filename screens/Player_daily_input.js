@@ -41,17 +41,17 @@ const SurveyQuestion = ({
         ) : (
           options.map((option, index) => (
             <TouchableOpacity
-              key={option}
+              key={index}
               style={[
                 styles.ratingOption,
                 {
                   backgroundColor:
-                    selectedOption === option
+                    selectedOption === index
                       ? getColorForOption(index) 
                       : 'opaque',
                 },
               ]}
-              onPress={() => handleOptionSelect(option)}
+              onPress={() => handleOptionSelect(index)}
             >
               <Text style={styles.ratingText}>{option}</Text>
             </TouchableOpacity>
@@ -71,7 +71,7 @@ const Player_input = ({ navigation }) => {
   const [mentalhealthscale, setMentalHealthScale] = useState('');
   const [physicalwellness, setwellness] = useState('');
   const [painScale, setPainScale] = useState('');
-  const [userName, setName] = useState('');
+  const [userComment , setComment] = useState('');
   const [dateandtime, setDatandtime] = useState(new Date());
 
   const labels = ['Terrible', 'Poor', 'Okay', 'Good', 'Excellent'];
@@ -142,6 +142,7 @@ const Player_input = ({ navigation }) => {
     mentalhealthscale,
     physicalwellness,
     painScale,
+    userComment,
   };
 
   set(survDataRef, constraintsData)
@@ -155,16 +156,15 @@ const Player_input = ({ navigation }) => {
         
       
   };
-
-
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.heading}>Today's Survey</Text>
       <View style={styles.questionContainer}>
       <Text style={styles.label}>Heart Rate:</Text>
       <View style={styles.inputContainer}>
         <TextInput
         placeholder="Enter Heart Rate (BPM)"
+        placeholderTextColor="rgba(0, 0, 0, 0.2)"
         onChangeText={(text) => setHeartRate(text)} 
         style={styles.textInput}
         />
@@ -210,18 +210,21 @@ const Player_input = ({ navigation }) => {
         onSelectOption={(value) => setwellness(value)} 
         threshold={2}
       />
-      <View style={styles.buttonContainer}>
-      <Button
-        onPress={handleClick}
-        title="Save"
-        style={styles.customButton}
+        <Text style={styles.label}>Comment:</Text>
+        <TextInput
+          placeholder="give a brief explanation of overall wellness"
+          placeholderTextColor="rgba(0, 0, 0, 0.2)"
+          onChangeText={(text) => setComment(text)}
+          style={styles.textInput}
       />
-      </View>
-  
-    </View>
+        <Button
+          onPress={handleClick}
+          title="Save"
+          style={styles.customButton}
+        />
+      </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -236,23 +239,23 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   questionContainer: {
-    marginBottom: 15, 
-    flexDirection: 'row', 
+    marginBottom: 15,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', 
+    justifyContent: 'space-between',
   },
   label: {
     fontSize: 17.5,
   },
   ratingContainer: {
     flexDirection: 'row',
-    alignItems : 'center',
+    alignItems: 'center',
     justifyContent: 'flex-start',
     flexWrap: 'wrap',
     padding: 10,
   },
   ratingOption: {
-    width:53,
+    width: 53,
     height: 53,
     borderRadius: 40,
     borderColor: 'gray',
@@ -264,7 +267,6 @@ const styles = StyleSheet.create({
   },
   selectedRatingOption: {
     borderColor: 'gold',
-  
   },
   ratingText: {
     fontSize: 10,
@@ -272,35 +274,33 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginTop: 30,
-    width:70,
-    height:70,
+    width: 70,
+    height: 70,
     alignItems: 'center',
-    
   },
   customButton: {
-    width: 200,  
-    height: 200,  
-  },
-  questionContainer: {
-    marginBottom: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  label: {
-    fontSize: 17.5,
+    position: 'absolute',
+    bottom: 20,
+    right: 8,
+    backgroundColor: '#2e64e5',
+    padding: 15,
+    borderRadius: 5,
+    width: '50%',
+    height: '30%',
   },
   inputContainer: {
-    flex: 1, 
-    marginLeft: 10, 
+    flex: 1,
+    marginLeft: 10,
   },
   textInput: {
-    height: 40, 
-    fontSize: 16, 
-    borderWidth: 1, 
+    height: '30%',
+    weight: '50%',
+    fontSize: 16,
+    borderWidth: 1,
     borderColor: 'gray',
-    paddingLeft: 10, 
+    paddingLeft: 10,
   },
 });
+
 
 export default Player_input;
