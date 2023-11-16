@@ -7,9 +7,25 @@ import { db , auth} from "../firebase";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { onAuthStateChanged } from "firebase/auth";
 
-const SurveyQuestion = ({ question, options, selectedOption, onSelectOption, isTextInput }) => {
+const SurveyQuestion = ({
+  question,
+  options,
+  selectedOption,
+  onSelectOption,
+  isTextInput,
+  threshold,
+}) => {
   const handleOptionSelect = (option) => {
     onSelectOption(option);
+  };
+
+  const getColorForOption = (optionValue) => {
+    // Define logic for color change based on the threshold
+    if (optionValue < threshold) {
+      return 'rgba(255, 0, 0, 0.5)'; // Red with 50% transparency
+    } else {
+      return 'rgba(0, 255, 0, 0.5)'; // Green with 50% transparency
+    }
   };
 
   return (
@@ -18,17 +34,22 @@ const SurveyQuestion = ({ question, options, selectedOption, onSelectOption, isT
       <View style={[styles.ratingContainer, { justifyContent: 'center' }]}>
         {isTextInput ? (
           <TextInput
-            style={styles.textInput} // Define a style for the text input
+            style={styles.textInput}
             value={selectedOption}
             onChangeText={(value) => onSelectOption(value)}
           />
-          ) : (
+        ) : (
           options.map((option, index) => (
             <TouchableOpacity
               key={option}
               style={[
                 styles.ratingOption,
-                selectedOption === option ? styles.selectedRatingOption : null,
+                {
+                  backgroundColor:
+                    selectedOption === option
+                      ? getColorForOption(index) 
+                      : 'opaque',
+                },
               ]}
               onPress={() => handleOptionSelect(option)}
             >
@@ -40,6 +61,7 @@ const SurveyQuestion = ({ question, options, selectedOption, onSelectOption, isT
     </View>
   );
 };
+
 
 const Player_input = ({ navigation }) => {
   const [heartRate, setHeartRate] = useState('');
@@ -81,13 +103,10 @@ const Player_input = ({ navigation }) => {
       console.error('User not Authenticated');
       return;
     }
- 
   try {
-    //const surveyDataRef = ref(db, `DataToPlot/${user.uid}`);
     get(userSurveyRef)
     .then((snapshot) => {
       const data = snapshot.val() || {};
-      // Append new values to the arrays
       data.heartRate = data.heartRate || [];
       data.heartRate.push(heartRate);
       data.hoursOfSleep = data.hoursOfSleep || [];
@@ -114,7 +133,30 @@ const Player_input = ({ navigation }) => {
   } catch (error) {
   console.error('Error saving data to the Realtime Database:', error);
   }
+
+  const survDataRef = ref(db, `Athletes/${user.uid}/SurveyData`);
+  const constraintsData = {
+    hoursOfSleep,
+    qualityOfSleep,
+    rpe,
+    mentalhealthscale,
+    physicalwellness,
+    painScale,
   };
+
+  set(survDataRef, constraintsData)
+    .then(() => {
+      console.log('Survey data saved successfully');
+    })
+    .catch((error) => {
+      console.error('Error saving survey data:', error);
+    });
+
+        
+      
+  };
+
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Today's Survey</Text>
@@ -132,37 +174,41 @@ const Player_input = ({ navigation }) => {
         question="RPE:"
         options={RPElabels}
         selectedOption={rpe}
-        onSelectOption={(value) => setRPE(value)} 
+        onSelectOption={(value) => setRPE(value)}
       />
       <SurveyQuestion
         question="Pain Scale:"
         options={RPElabels}
         selectedOption={painScale}
-        onSelectOption={(value) => setPainScale(value)} 
+        onSelectOption={(value) => setPainScale(value)}
       />
       <SurveyQuestion
         question="Hours of Sleep:"
         options={Painlabels}
         selectedOption={hoursOfSleep}
-        onSelectOption={(value) => setHoursOfSleep(value)} 
+        onSelectOption={(value) => setHoursOfSleep(value)}
+        threshold={5}
       />
       <SurveyQuestion
         question="Quality of Sleep:"
         options={Painlabels}
         selectedOption={qualityOfSleep}
         onSelectOption={(value) => setQualityOfSleep(value)} 
+        threshold={5}
       />
       <SurveyQuestion
         question="Mental Wellness:"
         options={labels}
         selectedOption={mentalhealthscale}
         onSelectOption={(value) => setMentalHealthScale(value)} 
+        threshold={2}
       />
       <SurveyQuestion
         question="Physical Health:"
         options={labels}
         selectedOption={physicalwellness}
         onSelectOption={(value) => setwellness(value)} 
+        threshold={2}
       />
       <View style={styles.buttonContainer}>
       <Button
