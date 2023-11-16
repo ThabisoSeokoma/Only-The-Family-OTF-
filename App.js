@@ -14,8 +14,6 @@ import ForgotPassWord from "./screens/ForgotPassWord";
 import ClubProfile from "./screens/ClubProfile";
 import AddPlayerScreen from "./screens/AddPlayerScreen";
 import scheduleDefaultNotifications from './screens/notify.js';
-import UpdateProfileScreen from "./screens/UpdateProfile";
-
 
 const AppStack = createNativeStackNavigator();
 
@@ -35,6 +33,10 @@ const App = () => {
         <AppStack.Screen name="Player_inputs" component = {Player_input} />
         <AppStack.Screen name="Player" component={PlayerScreen}/>
         <AppStack.Screen name='Progress' component={ProgressScreen}/>
+        <AppStack.Screen name ="Details" component = {DetailsScreen} />
+        <AppStack.Screen name ="Forgot" component = {ForgotPassWord} />
+        <AppStack.Screen name="ClubProfile" component={ClubProfile}/>
+        <AppStack.Screen name="AddPlayer" component={AddPlayerScreen}/>
       </AppStack.Navigator>
     </NavigationContainer>
   );
