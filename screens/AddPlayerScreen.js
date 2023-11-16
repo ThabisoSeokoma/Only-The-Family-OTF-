@@ -13,7 +13,8 @@ const AddPlayerScreen = () => {
   const [allAthletes, setAllAthletes] = useState([]);
   const [user, setUser] = useState(null);
 
-  const route = useRoute(); // Get the route object
+
+  const route = useRoute();
 
   // Define the db variable
   const db = getDatabase();
@@ -35,10 +36,50 @@ const AddPlayerScreen = () => {
     const clubPlayersRef = ref(db, `Managements/${user.uid}/clubs/${clubId}/club_players`);
     const newPlayerRef = push(clubPlayersRef);
 
+    //const selectedPlayerUserId = selectedPlayer.uid;
+
+
+    const surveyPath = `Athletes/${selectedPlayer.id}/SurveyData/mentalhealthscale`;
+
+    // Assuming Firebase reference and retrieval operations
+    const mentalHealthRef = ref(db, surveyPath);
+    console.log('Survey Path:', surveyPath); // Log the constructed path
+
+
+    
+
+    // async function fetchData() {
+    //   try {
+    //     const snapshot = await get(mentalHealthRef);
+    //     if (snapshot.exists()) {
+    //       const mentalHealthData = snapshot.val();
+    //       console.log('Mental health data:', mentalHealthData);
+    //       return mentalHealthData;
+    //     } else {
+    //       console.log('Mental health data not found');
+    //       return null;
+    //     }
+    //   } catch (error) {
+    //     console.error('Error fetching mental health data:', error);
+    //     return null;
+    //   }
+    // }
+    
+    // // Usage:
+    // fetchData().then((data) => {
+    //   console.log('Fetched data:', data); // Use data here
+    // });
+
+    
+  //  console.log("mentally " , Data);
+
+
+
     // Define the data you want to save (you may need to adjust this based on your player data structure)
     const playerData = {
       name: selectedPlayer.name,
       surname: selectedPlayer.surname,
+      //status: fetchData().then(data),
     };
 
     // Use the set method to add the player to the club_players path
@@ -48,8 +89,8 @@ const AddPlayerScreen = () => {
         alert(`Player ${selectedPlayer.name} added to club.`);
         const allPlayersRef = ref(db, `Managements/${user.uid}/clubs/${clubId}/club_players/AllPlayers`); // Adjust the path as needed
       
-        set(allPlayersRef, { [selectedPlayer.id]: playerData });
-        navigation.navigate('ClubProfile');
+        // set(allPlayersRef, { [selectedPlayer.id]: playerData });
+        // navigation.navigate('ClubProfile');
       })
       .catch((error) => {
         console.error('Error adding player to club:', error);
