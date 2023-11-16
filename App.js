@@ -1,5 +1,6 @@
-import { useState,useEffect } from 'react';
+
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import React, { useState,useEffect } from 'react';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import LoginScreen from "./screens/Login";
@@ -15,13 +16,14 @@ import ClubProfile from "./screens/ClubProfile";
 import AddPlayerScreen from "./screens/AddPlayerScreen";
 import UpdateProfileScreen from './screens/UpdateProfile';
 //import scheduleDefaultNotifications from './screens/notify.js';
+import PlayerInfo from "./screens/CoachPlayer"
+//import scheduleDefaultNotifications from './screens/notify';
+import ClubConstraints from './screens/constraints';
 
 const AppStack = createNativeStackNavigator();
 
 const App = () => {
-  // useEffect(() => {
-  //   scheduleDefaultNotifications(navigation);
-  // }, []);
+  // useEffect(() 
   return (
     <NavigationContainer>
       <AppStack.Navigator headerMode="none">
@@ -37,6 +39,8 @@ const App = () => {
         <AppStack.Screen name="ClubProfile" component={ClubProfile}/>
         <AppStack.Screen name="AddPlayer" component={AddPlayerScreen}/>
         <AppStack.Screen name="Update" component={UpdateProfileScreen}/>
+        <AppStack.Screen name="CoachPlayer" component={PlayerInfo}/>
+        <AppStack.Screen name="Constraints" component={ClubConstraints}/>
       </AppStack.Navigator>
     </NavigationContainer>
   );
