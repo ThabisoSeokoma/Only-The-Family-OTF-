@@ -9,6 +9,8 @@ import AddClubScreen from "./screens/AddClubScreen";
 import Player_input from "./screens/Player_daily_input";
 import PlayerScreen from "./screens/PlayerProfile";
 import ProgressScreen from "./screens/Progress";
+import UpdateProfileScreen from "./screens/UpdateProfile";
+
 
 const AppStack = createNativeStackNavigator();
 
@@ -22,6 +24,7 @@ const App = () => {
         <AppStack.Screen name="Player_inputs" component = {Player_input} />
         <AppStack.Screen name="Player" component={PlayerScreen}/>
         <AppStack.Screen name='Progress' component={ProgressScreen}/>
+        <AppStack.Screen name='Update' component={UpdateProfileScreen}/>
       </AppStack.Navigator>
     </NavigationContainer>
   );

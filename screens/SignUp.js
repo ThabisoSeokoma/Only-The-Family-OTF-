@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
-import { View, Text, TouchableOpacity, Platform, StyleSheet } from 'react-native';
+import {  ScrollView,View, Text, TouchableOpacity, Platform, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Calendar } from 'react-native-calendars';
 import FormInput from '../components/UserInput';
@@ -8,20 +8,20 @@ import FormButton from '../components/SignLogButton';
 import { Fireauth } from '../firebase'; // Import Firebase Authentication
 import { getAuth, createUserWithEmailAndPassword,updateProfile } from 'firebase/auth';
 import { getDatabase, ref, set } from 'firebase/database'
+import zxcvbn from 'zxcvbn';
 
 
 const SignupScreen = ({ navigation }) => {
  
   const [name, setName] = useState(''); // Add state for name
   const [surname, setSurname] = useState(''); // Add state for surname
-  const [id, setId] = useState(''); // Add state for ID
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState(new Date()); // Initialize with the current date, or the default date you prefer
   const [role, setRole] = useState('Athlete'); // Default role is player
-  const [, setPasswordStrength] = useState(null);
+  const [passwordStrength, setPasswordStrength] = useState(null);
   const [showCalendar, setShowCalendar] = useState(false);
 
 
@@ -39,7 +39,7 @@ const SignupScreen = ({ navigation }) => {
   
         // Store additional user information in the Realtime Database
         const db = getDatabase();
-        const node = role === 'HealthProfessional' ? 'HealthProfessionals' : 'Athletes';
+        const node = role === 'Managements' ? 'Managements' : 'Athletes';
 
         const userRef = ref(db, `${node}/${user.uid}`);
         set(userRef, {
@@ -52,7 +52,7 @@ const SignupScreen = ({ navigation }) => {
             // Profile updated successfully
             console.log('User information stored in Realtime Database:', user);
             if (role == 'Athlete') {
-              navigation.navigate('Player_inputs');
+              navigation.navigate('Player');
             }
             else{
               navigation.navigate('Coach');
@@ -72,14 +72,20 @@ const SignupScreen = ({ navigation }) => {
         // You can display an error message to the user here.
       });
   };
+  const handlePasswordChange = (userPassword) => {
+    setPassword(userPassword);
+  
+    // Check password strength
+    const passwordStrength = zxcvbn(userPassword);
+    setPasswordStrength(passwordStrength.score);
+  };
   const handleDateChange = (event, selectedDate) => {
-      setShowDatePicker(false);
-      if (selectedDate) {
-        setDateOfBirth(selectedDate);
-      }
-    };
-    const handleSignUp = () => {
-      signUpWithEmailPassword();
+    setShowDatePicker(Platform.OS === 'ios');
+  
+    if (selectedDate !== undefined) {
+      // If the user selected a date, update the date of birth
+      setDateOfBirth(selectedDate);
+    } 
     };
     const renderCalendar = () => {
       return showCalendar ? (
@@ -91,10 +97,9 @@ const SignupScreen = ({ navigation }) => {
         />
       ) : null;
     };
-  
-
   return (
-    <View style={styles.container}>
+    
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.text}>Create an account</Text>
 
        {/* Add Name input */}
@@ -123,11 +128,20 @@ const SignupScreen = ({ navigation }) => {
   {/* Date of Birth input */}
   <TouchableOpacity
         style={styles.calendarButton}
-        onPress={() => setShowCalendar(!showCalendar)}>
+        onPress={() => setShowDatePicker(true)}>
         <Text>{`Date of Birth: ${dateOfBirth.toDateString()}`}</Text>
       </TouchableOpacity>
 
-      {renderCalendar()}
+      {showDatePicker && (
+        <DateTimePicker
+          value={dateOfBirth}
+          mode="date"
+          is24Hour={true}
+          display="default"
+          onChange={handleDateChange}
+          minimumDate={new Date(1900, 0, 1)} // Adjust the minimum date as needed
+        />
+      )}
       {/* Select role */}
       <Text style={styles.roleText}>Select role:</Text>
         <Picker
@@ -140,23 +154,11 @@ const SignupScreen = ({ navigation }) => {
           style={styles.picker}
         >
           <Picker.Item label="Athlete" value="Athlete" />
-          <Picker.Item label="HealthProfessional" value="HealthProfessional" />
+          <Picker.Item label="Managements" value="Managements" />
         </Picker>
 
 
-      {/* Add ID input */}
-      <FormInput
-        labelValue={id}
-        onChangeText={(userId) => setId(userId)}
-        placeholderText="ID"
-        keyboardType="numeric"
-        iconType="user"
-        autoCapitalize="none"
-        autoCorrect={false}
-      />
-
-
-      {/* Email input */}
+    {/* Email input */}
       <FormInput
         labelValue={email}
         onChangeText={(userEmail) => setEmail(userEmail)}
@@ -169,12 +171,24 @@ const SignupScreen = ({ navigation }) => {
 
       {/* Password input */}
       <FormInput
-        labelValue={password}
-        onChangeText={(userPassword) => setPassword(userPassword)}
-        placeholderText="Password"
-        iconType="lock"
-        secureTextEntry={true}
-      />
+  labelValue={password}
+  onChangeText={(userPassword) => handlePasswordChange(userPassword)}
+  placeholderText="Password"
+  iconType="lock"
+  secureTextEntry={true}
+/>
+
+      {/* Display password strength indicator */}
+      {passwordStrength !== null && (
+        <Text style={{ color: passwordStrength < 3 ? 'red' : 'green' }}>
+          Password Strength: {passwordStrength}
+        </Text>
+      )}
+
+      {/* Display error message for weak password */}
+      {passwordStrength !== null && passwordStrength < 3 && (
+        <Text style={{ color: 'red' }}>Password is weak. Choose a stronger password.</Text>
+      )}
 
       {/* Confirm Password input */}
       <FormInput
@@ -197,7 +211,9 @@ const SignupScreen = ({ navigation }) => {
         onPress={() => navigation.navigate('Login')}>
         <Text style={styles.navButtonText}>Have an account? Login</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView> 
+
+    
   );
 };
 
@@ -269,6 +285,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginRight: 200,
   },
+  
 });
 
 export default SignupScreen;

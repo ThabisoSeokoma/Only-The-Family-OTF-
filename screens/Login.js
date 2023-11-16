@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image, Platform, StyleSheet, ScrollView }
 import FormInput from '../components/UserInput';
 import FormButton from '../components/SignLogButton';
 import { getAuth, signInWithEmailAndPassword } from '@firebase/auth';
+import { getDatabase, ref, onValue } from 'firebase/database';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -10,15 +11,15 @@ const LoginScreen = ({ navigation }) => {
 
   const auth = getAuth();
 
-  // Function to handle user login
   const loginWithEmailPassword = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // User signed in successfully
         const user = userCredential.user;
         console.log('User signed in:', user);
-        // You can navigate to another screen or perform additional actions here.
-        navigation.navigate('Player');
+        
+        // Check user role after successful login
+        checkUserRole(user.uid);
       })
       .catch((error) => {
         // Handle errors during login
@@ -27,6 +28,23 @@ const LoginScreen = ({ navigation }) => {
         console.error('Error signing in:', errorCode, errorMessage);
         // You can display an error message to the user here.
       });
+  };
+
+  // Function to check user role and navigate accordingly
+  const checkUserRole = (userId) => {
+    const db = getDatabase();
+    const userRef = ref(db, `Athletes/${userId}`);
+
+    onValue(userRef, (snapshot) => {
+      const userData = snapshot.val();
+      if (userData) {
+        // User is an athlete
+        navigation.navigate('Player');
+      } else {
+        // User is not an athlete (assume coach)
+        navigation.navigate('Coach');
+      }
+    });
   };
 
   return (
