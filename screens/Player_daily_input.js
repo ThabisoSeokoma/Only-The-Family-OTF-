@@ -72,6 +72,10 @@ const Player_input = ({ navigation }) => {
   const [physicalwellness, setwellness] = useState('');
   const [painScale, setPainScale] = useState('');
   const [userComment , setComment] = useState('');
+  const [duration , setDuration] = useState('');
+  const [trainingloads , setLoads] = useState('');
+  
+
   const [dateandtime, setDatandtime] = useState(new Date());
 
   const labels = ['Terrible', 'Poor', 'Okay', 'Good', 'Excellent'];
@@ -92,6 +96,9 @@ const Player_input = ({ navigation }) => {
             setRPE(data.rpe || '');
             setMentalHealthScale(data.mentalhealthscale || '');
             setPainScale(data.painScale || '');
+            setDuration(data.duration || '');
+            setLoads(data.trainingloads || '');
+
           }
         });
     }
@@ -119,6 +126,10 @@ const Player_input = ({ navigation }) => {
       data.mentalhealthscale.push(mentalhealthscale);
       data.painScale = data.painScale || [];
       data.painScale.push(painScale);
+      data.duration = data.duration || [];
+      data.duration.push(duration);
+      data.trainingloads = data.trainingloads || [];
+      data.trainingloads.push(trainingloads);
     
     set(userSurveyRef, data)
     .then(() => {
@@ -151,11 +162,17 @@ const Player_input = ({ navigation }) => {
     })
     .catch((error) => {
       console.error('Error saving survey data:', error);
-    });
+    }); 
+    
+    function calculateTrainingLoad(RPE, Duration) {
+      return (RPE+1) * Duration;
+    }
+    const trainingLoad = calculateTrainingLoad(rpe , duration);
+    setLoads(trainingLoad);
 
-        
-      
+    console.log("Training Load:", trainingLoad)
   };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.heading}>Today's Survey</Text>
@@ -166,6 +183,17 @@ const Player_input = ({ navigation }) => {
         placeholder="Enter Heart Rate (BPM)"
         placeholderTextColor="rgba(0, 0, 0, 0.2)"
         onChangeText={(text) => setHeartRate(text)} 
+        style={styles.textInput}
+        />
+      </View>
+      </View>
+      <View style={styles.questionContainer}>
+      <Text style={styles.label}>Workout Duration:</Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+        placeholder="in minutes"
+        placeholderTextColor="rgba(0, 0, 0, 0.2)"
+        onChangeText={(text) => setDuration(text)} 
         style={styles.textInput}
         />
       </View>
@@ -210,13 +238,17 @@ const Player_input = ({ navigation }) => {
         onSelectOption={(value) => setwellness(value)} 
         threshold={2}
       />
+      <View style={styles.questionContainer}>
         <Text style={styles.label}>Comment:</Text>
+        <View style={styles.inputContainer}>
         <TextInput
           placeholder="give a brief explanation of overall wellness"
           placeholderTextColor="rgba(0, 0, 0, 0.2)"
           onChangeText={(text) => setComment(text)}
           style={styles.textInput}
       />
+      </View>
+      </View>
         <Button
           onPress={handleClick}
           title="Save"
