@@ -7,29 +7,33 @@ import { getAuth } from 'firebase/auth';
 const ClubProfile = () => {
   const navigation = useNavigation();
   const [players, setPlayers] = useState([]);
-  const [clubId, setClubId] = useState(''); // Add clubId state
+  const [playerDetails, setPlayerDetails] = useState({});
+
+  const [clubId, setClubId] = useState('');
 
   const handleAddPlayer = () => {
     navigation.navigate('AddPlayer', { clubId: clubId });
   };
+  const handlelimits = () => {
+    navigation.navigate('Constraints', { clubId:clubId });
+
+  };
+
+  const getPlayerInfo=()=>{
+    navigation.navigate('CoachPlayer');
+  }
   
   const auth = getAuth();
   const user = auth.currentUser;
 
+  //const playerIdPath = 'Athletes/${athlete.uid}/';
+
+
   useEffect(() => {
-    // Get a reference to the database
     const db = getDatabase();
-
-    // The actual user ID of the coach
     const userId = user.uid;
-
-    // Path to the club ID in your database
-    const clubIdPath = `Managements/${user.uid}/clubs`; // Modify this path accordingly
-
-    // Get a reference to the user's clubs
+    const clubIdPath = `Managements/${user.uid}/clubs`; 
     const userClubsRef = ref(db, clubIdPath);
-
-    // Listen for changes in the user's club data
     onValue(userClubsRef, (snapshot) => {
       const clubData = snapshot.val();
 
@@ -75,15 +79,14 @@ const ClubProfile = () => {
       <Text style={styles.text}>CLUB PLAYERS</Text>
 
       {players.map((player) => (
-        <TouchableOpacity
-          key={player.id}
-          style={styles.clubContainer}
-          onPress={() => {
-            // Handle player click (e.g., navigate to player details screen)
-          }}>
-          <Text style={styles.playerName}>{player.name}</Text>
-          {/* Add other player information here */}
-        </TouchableOpacity>
+      <TouchableOpacity
+        key={player.id}
+        style={styles.clubContainer}
+        onPress={() => getPlayerInfo(player.id)}
+      >
+        <Text style={styles.playerName}>{player.name + " " + player.surname}</Text>
+        <Text style={styles.playerReadinesss}>{"status: " + (player.status || "No data")}</Text>
+      </TouchableOpacity>
       ))}
 
       <TouchableOpacity
@@ -91,6 +94,13 @@ const ClubProfile = () => {
         onPress={handleAddPlayer}>
         <Text style={styles.addButtonLabel}>
           + Add PLAYER
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.setButton}
+        onPress={handlelimits}>
+        <Text style={styles.addButtonLabel}>
+          set club constraints
         </Text>
       </TouchableOpacity>
     </ScrollView>
@@ -115,13 +125,15 @@ const styles = StyleSheet.create({
         color: '#051d5f',
       },
       clubContainer: {
-        backgroundColor: '#2e64e5',
+        backgroundColor: 'rgba(46, 100, 229, 0.20)', 
         padding: 10,
         borderRadius: 5,
         marginBottom: 10,
         width: '90%',
         alignItems: 'center',
+        height: 100, 
       },
+      
       clubName: {
         fontSize: 18,
         fontWeight: '500',
@@ -131,11 +143,20 @@ const styles = StyleSheet.create({
       addButton: {
         position: 'absolute',
         bottom: 20,
-        left: 20,
+        left: 10,
         backgroundColor: '#2e64e5',
         padding: 15,
         borderRadius: 5,
-        width: '100%',
+        width: '48%',
+      },
+      setButton: {
+        position: 'absolute',
+        bottom: 20,
+        right: 8,
+        backgroundColor: '#2e64e5',
+        padding: 15,
+        borderRadius: 5,
+        width: '48%',
       },
       addButtonLabel: {
         fontSize: 18,
@@ -145,10 +166,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
       },
       playerName: {
-        fontSize: 18,
-        fontWeight: '500',
-        color: 'white',
-        fontFamily: 'Roboto',
+        fontSize: 18, // Adjust as needed
+        fontWeight: 'bold', // To emphasize the name
+        marginBottom: 5, // Spacing between name and status
+      },
+      playerReadinesss: {
+        fontSize: 14, // Adjust as needed
+        color: 'white', // Status text color
       },
 });
 
