@@ -176,28 +176,22 @@ const Player_input = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.heading}>Today's Survey</Text>
-      <View style={styles.questionContainer}>
+      <View style={styles.questionContainer}></View> 
       <Text style={styles.label}>Heart Rate:</Text>
-      <View style={styles.inputContainer}>
         <TextInput
         placeholder="Enter Heart Rate (BPM)"
         placeholderTextColor="rgba(0, 0, 0, 0.2)"
         onChangeText={(text) => setHeartRate(text)} 
         style={styles.textInput}
         />
-      </View>
-      </View>
-      <View style={styles.questionContainer}>
+        
       <Text style={styles.label}>Workout Duration:</Text>
-      <View style={styles.inputContainer}>
         <TextInput
         placeholder="in minutes"
         placeholderTextColor="rgba(0, 0, 0, 0.2)"
         onChangeText={(text) => setDuration(text)} 
         style={styles.textInput}
         />
-      </View>
-    </View>
         <SurveyQuestion
         question="RPE:"
         options={RPElabels}
@@ -238,17 +232,13 @@ const Player_input = ({ navigation }) => {
         onSelectOption={(value) => setwellness(value)} 
         threshold={2}
       />
-      <View style={styles.questionContainer}>
         <Text style={styles.label}>Comment:</Text>
-        <View style={styles.inputContainer}>
         <TextInput
           placeholder="give a brief explanation of overall wellness"
           placeholderTextColor="rgba(0, 0, 0, 0.2)"
           onChangeText={(text) => setComment(text)}
           style={styles.textInput}
       />
-      </View>
-      </View>
         <Button
           onPress={handleClick}
           title="Save"
@@ -259,11 +249,9 @@ const Player_input = ({ navigation }) => {
 };
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'left',
+    flexGrow: 1,
     padding: 20,
-    height: 500,
+    paddingBottom: 100,
   },
   heading: {
     fontSize: 24,
@@ -280,6 +268,8 @@ const styles = StyleSheet.create({
     fontSize: 17.5,
   },
   ratingContainer: {
+    width: '70%',
+    height :'40%' ,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -287,15 +277,15 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   ratingOption: {
-    width: 53,
-    height: 53,
-    borderRadius: 40,
+    width: 40,
+    height: 40,
+    borderRadius: 15,
     borderColor: 'gray',
-    borderWidth: 3,
+    borderWidth: 2,
     alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 2,
-    marginBottom: 5,
+    justifyContent: 'left',
+    marginHorizontal: 0.75,
+    marginBottom: 1,
   },
   selectedRatingOption: {
     borderColor: 'gold',
@@ -325,10 +315,10 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   textInput: {
-    height: '30%',
-    weight: '50%',
+    height: '5%',
+    weight: '20%',
     fontSize: 16,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: 'gray',
     paddingLeft: 10,
   },
