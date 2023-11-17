@@ -15,7 +15,7 @@ import ForgotPassWord from "./screens/ForgotPassWord";
 import ClubProfile from "./screens/ClubProfile";
 import AddPlayerScreen from "./screens/AddPlayerScreen";
 import UpdateProfileScreen from './screens/UpdateProfile';
-//import scheduleDefaultNotifications from './screens/notify.js';
+import scheduleDefaultNotifications from './screens/notify.js';
 import PlayerInfo from "./screens/CoachPlayer"
 //import scheduleDefaultNotifications from './screens/notify';
 import ClubConstraints from './screens/constraints';
@@ -24,6 +24,10 @@ import CoachPlayer from "./screens/CoachPlayer";
 const AppStack = createNativeStackNavigator();
 
 const App = () => {
+  useEffect(() => {
+    // Call the scheduling function when the component mounts or as needed
+    scheduleDefaultNotifications();
+  }, [navigation]);
   // useEffect(() 
   return (
     <NavigationContainer>
