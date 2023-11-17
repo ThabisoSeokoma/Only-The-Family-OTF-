@@ -48,6 +48,7 @@ const bmiColor = (bmi) => {
 
 const ProgressScreen = ({ navigation }) => {
   // Sample data for the D3 bar chart
+  const [ACWR, setACWR] = useState(null);
   const auth = getAuth();
   const [user, setUser] = useState(null);
   const [userName, setUserName] = useState('');
@@ -96,7 +97,7 @@ const ProgressScreen = ({ navigation }) => {
     //const height = 300 - margin.top - margin.bottom;
     //const barWidth = width / data.length;
       console.log(data);
-      const DuraSize=Duration.length;
+      //const DuraSize=Duration.length;
     // Example usage:
     const plannedWorkInMinutes = 0; // replace with your planned work duration in minutes
     const completedWork = 0; // replace with your completed work value
@@ -107,6 +108,7 @@ const ProgressScreen = ({ navigation }) => {
 
     if (acwr !== null) {
     console.log(`Adjusted ACWR: ${acwr.toFixed(2)}`);
+    setACWR(acwr);
     } else {
       console.log("Unable to calculate ACWR. Please check input values.");
     }
@@ -130,12 +132,12 @@ const ProgressScreen = ({ navigation }) => {
 
 class ACWRCalculator {
   
-  constructor(plannedWorkInMinutes, completedWork) {
-    if(plannedWorkInMinutes.length==0 || completedWork.length==0){
+  constructor(Duration, RPEdata) {
+    if(Duration.length==0 || RPEdata.length==0){
       return null;
     }
-    this.plannedWorkInMinutes = plannedWorkInMinutes[plannedWorkInMinutes.length-1];
-    this.completedWork = completedWork[ completedWork.length-1];
+    this.plannedWorkInMinutes = Duration[Duration.length-1];
+    this.completedWork = RPEdata[ RPEdata.length-1];
    // this.heartRate = heartRate;
   }
 
@@ -150,13 +152,13 @@ class ACWRCalculator {
     var num=0;
     //const adjustedACWR = acwr / (this.heartRate / 60); // assuming heart rate is in beats per minute
     var start=0;
-    if(completedWork.length>28){
-      start=completedWork.length- 28;
+    if(RPEdata.length>28){
+      start=RPEdata.length- 28;
     }
-    num =completedWork.length-start;
-    for (let index = start; index < completedWork.length; index++) {
-      const element = completedWork[index];
-      const element2 = plannedWorkInMinutes[index];
+    num =RPEdata.length-start;
+    for (let index = start; index < RPEdata.length; index++) {
+      const element = RPEdata[index];
+      const element2 = Duration[index];
       acwrTotal+=element*element2;
       
     }
@@ -424,6 +426,13 @@ const createGraph = (data, containerId,xAxisLabel,yAxisLabel,heading) => {
         <Text style={styles.label}>Age:</Text>
         <Text style={styles.input}>{age ? age.toString() : 'NOT SPECIFIED'}</Text>
       </View>
+      {ACWR != null && (
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>ACWR:</Text>
+          <Text style={styles.input}>{ACWR.toString()}</Text>
+        </View>
+      )}
+
 
       <TouchableOpacity style={styles.updateProfileButton} onPress={handleUpdateProfile}>
         <Text style={styles.buttonText}>Update Profile</Text>
