@@ -1,12 +1,12 @@
 import messaging from '@react-native-firebase/messaging';
 import { Platform } from 'react-native';
 
-const scheduleDefaultNotifications = async (navigation) => {
+const scheduleDefaultNotifications = async () => {
   const today = new Date();
   const notificationTimes = [
     new Date(today.getFullYear(), today.getMonth(), today.getDate(), 8, 0 , 0),
     new Date(today.getFullYear(), today.getMonth(), today.getDate(), 12, 0 , 0),
-    new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 30 , 0),
+    new Date(today.getFullYear(), today.getMonth(), today.getDate(), 18, 30 , 0),
   ];
 
   for (const notificationTime of notificationTimes) {
@@ -32,7 +32,7 @@ const scheduleDefaultNotifications = async (navigation) => {
             if (permission === 'granted') {
               const notification = new Notification('Reminder!', options);
               notification.onclick = () => {
-                navigation.navigate('Player_inputs');
+                //navigation.navigate('Player_inputs');
                 console.log("notified!");
               };  
             }
