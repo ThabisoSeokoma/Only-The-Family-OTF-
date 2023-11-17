@@ -59,8 +59,9 @@ const ProgressScreen = ({ navigation }) => {
   //const data = [20, 30, 20, 50,40,50,70];
   //const [user, setUser] = useState(null);
   const [data, setData] = useState([]);
-  const [data2, setData2] = useState([]);
+  const [RPEdata, setData2] = useState([]);
   const [data3, setData3] = useState([]);
+  const [Duration, setDuration] = useState([]);
   //const [data4, setData4] = useState([]);
   const userA = auth.currentUser;
   const userSurveyRef = ref(db, `DataToPlot/${userA.uid}`);
@@ -73,6 +74,7 @@ const ProgressScreen = ({ navigation }) => {
           setData(dataFromFirebase.qualityOfSleep || '');
           setData2(dataFromFirebase.rpe || '');
           setData3(dataFromFirebase.painScale || '');
+          setDuration(dataFromFirebase.duration || '');
           console.log("We fetched")
           //setData4(dataFromFirebase.mentalhealthscale || '');
         }
@@ -87,19 +89,20 @@ const ProgressScreen = ({ navigation }) => {
   }, [userA]);
 
   useEffect(() => {
-    if (data.length>0){
+    if (data.length>0 && Duration.length>0){
     // Set up the SVG canvas dimensions
     const margin = { top: 20, right: 30, bottom: 40, left: 40 };
     const width = 400 - margin.left - margin.right;
     //const height = 300 - margin.top - margin.bottom;
     //const barWidth = width / data.length;
-
+      console.log(data);
+      const DuraSize=Duration.length;
     // Example usage:
-    const plannedWorkInMinutes = 120; // replace with your planned work duration in minutes
-    const completedWork = 90; // replace with your completed work value
-    const heartRate = 70; // replace with your heart rate value
+    const plannedWorkInMinutes = 0; // replace with your planned work duration in minutes
+    const completedWork = 0; // replace with your completed work value
+    //const heartRate = 70; // replace with your heart rate value
 
-    const acwrCalculator = new ACWRCalculator(plannedWorkInMinutes, completedWork, heartRate);
+    const acwrCalculator = new ACWRCalculator(Duration, RPEdata);
     const acwr = acwrCalculator.calculateACWR();
 
     if (acwr !== null) {
@@ -113,7 +116,7 @@ const ProgressScreen = ({ navigation }) => {
     createGraph(data,"d3-chart-container1",xAxisLabel1,yAxisLabel1,heading1);
     const yAxisLabel2="RPE ";
     const heading2="Heading for RPE";
-    createGraph(data2,"d3-chart-container2",xAxisLabel1,yAxisLabel2,heading2);
+    createGraph(RPEdata,"d3-chart-container2",xAxisLabel1,yAxisLabel2,heading2);
     const yAxisLabel3=" Pain Scale" ;
     const heading3="Heading for Pain Scale";
     createGraph(data3,"d3-chart-container3",xAxisLabel1,yAxisLabel3,heading3);
@@ -121,26 +124,46 @@ const ProgressScreen = ({ navigation }) => {
     const heading4="Heading for Mental health Scale";
     //createGraph(data4,"d3-chart-container4",xAxisLabel1,yAxisLabel4,heading4);
     }
-    }, [data,data2,data3]);
+    }, [data,RPEdata,data3,Duration]);
 
 
 
 class ACWRCalculator {
-  constructor(plannedWorkInMinutes, completedWork, heartRate) {
-    this.plannedWorkInMinutes = plannedWorkInMinutes;
-    this.completedWork = completedWork;
-    this.heartRate = heartRate;
+  
+  constructor(plannedWorkInMinutes, completedWork) {
+    if(plannedWorkInMinutes.length==0 || completedWork.length==0){
+      return null;
+    }
+    this.plannedWorkInMinutes = plannedWorkInMinutes[plannedWorkInMinutes.length-1];
+    this.completedWork = completedWork[ completedWork.length-1];
+   // this.heartRate = heartRate;
   }
 
   calculateACWR() {
-    if (this.plannedWorkInMinutes <= 0 || this.heartRate <= 0) {
-      console.error("Planned work and heart rate should be greater than 0.");
+    if (this.plannedWorkInMinutes <= 0 ) {
+      console.error("Planned work should be greater than 0.");
       return null;
     }
 
-    const acwr = (this.completedWork / this.plannedWorkInMinutes) * 100;
-    const adjustedACWR = acwr / (this.heartRate / 60); // assuming heart rate is in beats per minute
-
+    const acwr = (this.completedWork *this.plannedWorkInMinutes) ;
+    var  acwrTotal=0;
+    var num=0;
+    //const adjustedACWR = acwr / (this.heartRate / 60); // assuming heart rate is in beats per minute
+    var start=0;
+    if(completedWork.length>28){
+      start=completedWork.length- 28;
+    }
+    num =completedWork.length-start;
+    for (let index = start; index < completedWork.length; index++) {
+      const element = completedWork[index];
+      const element2 = plannedWorkInMinutes[index];
+      acwrTotal+=element*element2;
+      
+    }
+    if(num!=0){
+      acwrTotal=acwrTotal/num
+    }
+    const adjustedACWR=acwr/acwrTotal;
     return adjustedACWR;
   }
 }
