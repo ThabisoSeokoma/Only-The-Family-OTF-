@@ -114,7 +114,6 @@ const Player_input = ({ navigation }) => {
       mentalhealthscale == '' ||
       painScale == '' ||
       duration == '' ||
-      trainingloads == '' ||
       physicalwellness == '' ||
       userComment == ''
     );

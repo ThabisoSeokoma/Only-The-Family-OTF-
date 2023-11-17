@@ -19,6 +19,7 @@ import UpdateProfileScreen from './screens/UpdateProfile';
 import PlayerInfo from "./screens/CoachPlayer"
 //import scheduleDefaultNotifications from './screens/notify';
 import ClubConstraints from './screens/constraints';
+import CoachPlayer from "./screens/CoachPlayer";
 
 const AppStack = createNativeStackNavigator();
 
@@ -39,7 +40,7 @@ const App = () => {
         <AppStack.Screen name="ClubProfile" component={ClubProfile}/>
         <AppStack.Screen name="AddPlayer" component={AddPlayerScreen}/>
         <AppStack.Screen name="Update" component={UpdateProfileScreen}/>
-        <AppStack.Screen name="CoachPlayer" component={PlayerInfo}/>
+        <AppStack.Screen name="CoachPlayer" component={CoachPlayer}/>
         <AppStack.Screen name="Constraints" component={ClubConstraints}/>
       </AppStack.Navigator>
     </NavigationContainer>

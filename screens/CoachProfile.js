@@ -48,7 +48,7 @@ const CoachProfile = () => {
         source={require('../assets/sports-logo.png')}
         style={styles.logo}
       />
-      <Text style={styles.text}>CLUBS</Text>
+      <Text style={styles.text}>TEAMS</Text>
 
       {clubs.map((club) => (
         <TouchableOpacity
@@ -67,7 +67,7 @@ const CoachProfile = () => {
         style={styles.addButton}
         onPress={handleAddClub}>
         <Text style={styles.addButtonLabel}>
-          + Add Club
+          + Add Team
         </Text>
       </TouchableOpacity>
     </ScrollView>

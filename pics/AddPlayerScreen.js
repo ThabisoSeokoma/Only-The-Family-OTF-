@@ -34,7 +34,7 @@ const AddPlayerScreen = () => {
 
     // Reference to the "Management/clubs/club_players" path
     const clubPlayersRef = ref(db, `Managements/${user.uid}/clubs/${clubId}/club_players`);
-    //const newPlayerRef = push(clubPlayersRef);
+    const newPlayerRef = push(clubPlayersRef);
 
     //const selectedPlayerUserId = selectedPlayer.uid;
 
@@ -91,7 +91,6 @@ const AddPlayerScreen = () => {
       surname: selectedPlayer.surname,
     };
     // Use the set method to add the player to the club_players path
-     const newPlayerRef = ref(db, `Managements/${user.uid}/clubs/${clubId}/club_players/${selectedPlayerUid}`);
     set(newPlayerRef, playerData)
       .then(() => {
         console.log(`Player ${selectedPlayer.name} added to club with UID: ${selectedPlayerUid}.`);

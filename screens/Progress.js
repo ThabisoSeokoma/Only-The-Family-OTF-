@@ -1,4 +1,3 @@
-
 import React, { useState,useEffect } from 'react';
 import { BarChart } from 'react-native-chart-kit';
 import * as d3 from 'd3';
@@ -63,8 +62,8 @@ const ProgressScreen = ({ navigation }) => {
   const [RPEdata, setData2] = useState([]);
   const [data3, setData3] = useState([]);
   const [Duration, setDuration] = useState([]);
-  const [ACWRList, setACWRLIst] = useState('');
   //const [data4, setData4] = useState([]);
+  const [ACWRList, setACWRLIst] = useState('');
   const userA = auth.currentUser;
   const userSurveyRef = ref(db, `DataToPlot/${userA.uid}`);
   useEffect(() => {
@@ -77,7 +76,7 @@ const ProgressScreen = ({ navigation }) => {
           setData2(dataFromFirebase.rpe || '');
           setData3(dataFromFirebase.painScale || '');
           setDuration(dataFromFirebase.duration || '');
-          setACWRLIst(dataFromFirebase.rpe || '');
+          setACWRLIst(dataFromFirebase.ACWRVal || '');
           console.log("We fetched")
           //setData4(dataFromFirebase.mentalhealthscale || '');
         }
@@ -283,89 +282,31 @@ const createGraph = (data, containerId,xAxisLabel,yAxisLabel,heading) => {
         setHeight(userData.height || '');
         setWeight(userData.weight || '');
         setBMI(userData.bmi || '');
-        setSportSpeciality(userData.sportSpeciality.trim() || '');
+        setSportSpeciality(userData.sportSpeciality || '');
         setAge(calculateAge(userData.dateOfBirth));
         setUser(userData);
       }
     });
   };
+  const bmiColor = (bmi) => {
+    if (!bmi) {
+      // Return a default color if BMI is not available
+      return 'black';
+    }
   
-  const sportSpecialties = {
-    // Football
-        striker: { height: { min: 170, max: 190 }, weight: { min: 70, max: 90 } },
-        midfielder: { height: { min: 160, max: 180 }, weight: { min: 60, max: 80 } },
-        defender: { height: { min: 170, max: 200 }, weight: { min: 80, max: 110 } },
-        goalkeeper: { height: { min: 180, max: 200 }, weight: { min: 70, max: 100 } },
-    
-    // Basketball
-        pointGuard: { height: { min: 180, max: 195 }, weight: { min: 70, max: 90 } },
-        shootingGuard: { height: { min: 185, max: 200 }, weight: { min: 80, max: 100 } },
-        smallForward: { height: { min: 190, max: 210 }, weight: { min: 90, max: 110 } },
-        powerForward: { height: { min: 195, max: 210 }, weight: { min: 90, max: 120 } },
-        center: { height: { min: 200, max: 220 }, weight: { min: 100, max: 130 } },
-    
-    // Netball
-    
-        shooter: { height: { min: 160, max: 180 }, weight: { min: 50, max: 70 } },
-        goalAttack: { height: { min: 165, max: 185 }, weight: { min: 55, max: 75 } },
-        wingAttack: { height: { min: 160, max: 180 }, weight: { min: 50, max: 70 } },
-        center: { height: { min: 160, max: 180 }, weight: { min: 50, max: 70 } },
-        wingDefense: { height: { min: 165, max: 185 }, weight: { min: 55, max: 75 } },
-        goalDefense: { height: { min: 160, max: 180 }, weight: { min: 50, max: 70 } },
-        goalkeeper: { height: { min: 165, max: 185 }, weight: { min: 55, max: 75 } },
-    // Volleyball
-
-        setter: { height: { min: 160, max: 180 }, weight: { min: 50, max: 70 } },
-        outsideHitter: { height: { min: 170, max: 190 }, weight: { min: 60, max: 80 } },
-        middleBlocker: { height: { min: 165, max: 185 }, weight: { min: 55, max: 75 } },
-        oppositeHitter: { height: { min: 170, max: 190 }, weight: { min: 60, max: 80 } },
-        libero: { height: { min: 160, max: 180 }, weight: { min: 50, max: 70 } },
-      
-    // Tennis
-  
-        singlesPlayer: { height: { min: 160, max: 190 }, weight: { min: 50, max: 90 } },
-        doublesPlayer: { height: { min: 170, max: 190 }, weight: { min: 60, max: 80 } },
-      
-    // Rugby
-
-        prop: { height: { min: 170, max: 190 }, weight: { min: 80, max: 110 } },
-        hooker: { height: { min: 175, max: 195 }, weight: { min: 85, max: 115 } },
-        lock: { height: { min: 180, max: 200 }, weight: { min: 90, max: 120 } },
-        flanker: { height: { min: 175, max: 195 }, weight: { min: 85, max: 115 } },
-        numberEight: { height: { min: 180, max: 200 }, weight: { min: 90, max: 120 } },
-        scrumHalf: { height: { min: 165, max: 185 }, weight: { min: 60, max: 80 } },
-        flyHalf: { height: { min: 170, max: 190 }, weight: { min: 70, max: 90 } },
-        center: { height: { min: 175, max: 195 }, weight: { min: 80, max: 110 } },
-        wing: { height: { min: 180, max: 200 }, weight: { min: 85, max: 115 } },
-        fullback: { height: { min: 170, max: 190 }, weight: { min: 70, max: 90 } },
-    
-  
+    if (bmi < 18.5) {
+      return 'red'; // Underweight
+    } else if (bmi >= 18.5 && bmi <= 24.9) {
+      return 'green'; // Healthy Weight
+    } else if (bmi >= 25.0 && bmi <= 29.9) {
+      return 'red'; // Overweight
+    } else {
+      return 'red'; // Obese
+    }
   };
-  
-  
-  // Function to check if the user's attribute is within the recommended range
-  const isAttributeInRange = (attribute, sport,userData) => {
-    
-    if (!userData || !userData.sportSpeciality) {
-      console.error('User or sportSpeciality is null or undefined');
-      return false;
-    }
-    const sportRanges = sportSpecialties[sport];
-    if (!sportRanges) {
-      // Handle the case where sport is not found
-      alert(`Sport '${sport}' not found in sportSpecialties`);
-      return false;
-    }
-  
-    const range = sportRanges[attribute];
-    if (!range) {
-      // Handle the case where attribute is not found for the given sport
-      alert(`Attribute '${attribute}' not found for sport '${sport}'`);
-      return false;
-    }
-   
-    return userData[attribute] >= range.min && userData[attribute] <= range.max;
-  };
+
+
+
   const handleUpdateProfile = () => {
     // Navigate to the UpdateProfile screen
     navigation.navigate('Update');
@@ -384,55 +325,23 @@ const createGraph = (data, containerId,xAxisLabel,yAxisLabel,heading) => {
     
       
 
-  <View style={styles.inputContainer}>
-  <Text style={styles.label}>Height:</Text>
-  <TextInput
-    style={[styles.input, isAttributeInRange('height', sportSpeciality, user) ? null : styles.invalidInput]}
-    placeholder="Enter height"
-    keyboardType="numeric"
-    value={height ? `${height.toString()} m` : 'NOT SPECIFIED'}
-    onChangeText={(text) => setHeight(text)}
-    editable={false}
-  />
- 
-  
-  {isAttributeInRange('height', sportSpeciality, user) ? (
-    <View style={{ width: 20, height: 20, backgroundColor: 'green' }} />
-  ) : (
-    <View style={{ width: 20, height: 20, backgroundColor: 'red' }} />
-  )}
-</View>
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Height:</Text>
+        <Text style={styles.input}>{height? `${height.toString()} m` : 'NOT SPECIFIED'}</Text>
+      </View>
 
-<View style={styles.inputContainer}>
-  <Text style={styles.label}>Weight:</Text>
-  <TextInput
-    style={[styles.input, isAttributeInRange('weight', sportSpeciality, user) ? null : styles.invalidInput]}
-    placeholder="Enter weight"
-    keyboardType="numeric"
-    value={weight ? `${weight.toString()} kg` : 'NOT SPECIFIED'}
-    onChangeText={(text) => setWeight(text)}
-    editable={false} // Set editable to false to make it non-editable
-  />
- 
-  {/* Display a red or green square based on validation */}
-  {isAttributeInRange('weight', sportSpeciality, user) ? (
-    <View style={{ width: 20, height: 20, backgroundColor: 'green' }} />
-  ) : (
-    <View style={{ width: 20, height: 20, backgroundColor: 'red' }} />
-  )}
+    <View style={styles.inputContainer}>
+      <Text style={styles.label}>Weight:</Text>
+      <Text style={styles.input}>{weight? `${weight.toString()} kg` : 'NOT SPECIFIED'}</Text>
+    </View>
 
-</View>
-
-
-
-<View style={styles.inputContainer}>
-  <Text style={styles.label}>BMI:</Text>
-  <Text style={styles.input}>{bmi ? bmi.toString() : 'NOT SPECIFIED'}</Text>
-  {bmi && (
-    <View style={{ width: 20, height: 20, backgroundColor: bmiColor(bmi) }} />
-  )}
- </View>
-
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>BMI:</Text>
+        <Text style={styles.input}>{bmi ? bmi.toString() : 'NOT SPECIFIED'}</Text>
+        {bmi && (
+          <View style={{ width: 20, height: 20, backgroundColor: bmiColor(bmi) }} />
+        )}
+      </View>
 
       <View style={styles.inputContainer}>
         <Text style={styles.label}>SportSpeciality:</Text>
@@ -473,7 +382,7 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'Roboto',
     fontSize: 28,
-    marginBottom: 10,
+    marginBottom: 40,
     color: '#051d5f',
   },
   chartContainer: {
@@ -484,7 +393,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 18,
-    marginBottom: 5,
+    marginBottom: 20,
     color: '#051d5f',
   },
   inputContainer: {
@@ -492,25 +401,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 20,
-    paddingHorizontal: 20,
+    paddingHorizontal: 1,
   },
   input: {
-    height: 20,
+    height: 40,
     borderColor: 'white',
     marginBottom: 2,
-    paddingHorizontal: 120,
-    flex: 1,
+    paddingHorizontal: 20,
+    flex: 10,
   },
   updateProfileButton: {
-    marginTop: 150,
+    marginTop: 20,
     padding: 10,
     alignItems: 'center',
     backgroundColor: '#2e64e5',
     borderRadius: 5,
   },
   buttonText: {
-    fontSize: 18,
-    width: 120, 
+    fontSize:12,
+    width: 300, 
     color: 'white',
     textAlign: 'center',
   },
@@ -518,10 +427,6 @@ const styles = StyleSheet.create({
     width: 128, 
   },
 
-  invalidInput: {
-    borderColor: 'red',
-    borderWidth: 0,
-  },
 });
 
 

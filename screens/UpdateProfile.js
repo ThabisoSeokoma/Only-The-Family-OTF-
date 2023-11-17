@@ -104,96 +104,64 @@ const UpdateProfileScreen = () => {
     setShowConfirmation(false);
     navigation.navigate('Progress');
   };
-return (
-  <ScrollView contentContainerStyle={styles.container}>
-    {user ? (
-      <>
-        <Text style={styles.text}>{`${userName} please update below:`}</Text>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Height(m):</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter height"
-            keyboardType="numeric"
-            value={height ? height.toString() : ''}
-            onChangeText={(text) => setHeight(text)}
-            textAlignVertical="top"
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Weight(kg):</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter weight"
-            keyboardType="numeric"
-            value={weight ? weight.toString() : ''}
-            onChangeText={(text) => setWeight(text)}
-            textAlignVertical="top"
-          />
-        </View>
-        <View style={styles.inputContainer}>
-        
-          <Text style={styles.label}>BMI:</Text>
-          <TextInput
-           style={[styles.input, styles.nonEditableInput]}
-            placeholder="BMI"
-            value={bmi ? bmi.toString() : ''}
-            onChangeText={(text) => setBMI(text)}
-            editable={false} 
-            textAlignVertical="top"
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>SportSpeciality:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter SportSpeciality"
-            value={sportSpeciality ? sportSpeciality.toString() : ''}
-            onChangeText={(text) => setSportSpeciality(text)}
-            textAlignVertical="top"
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Age:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter Age"
-            keyboardType="numeric"
-            value={age ? age.toString() : ''}
-            onChangeText={(text) => setAge(text)}
-            textAlignVertical="top"
-          />
-        </View>
-        <TouchableOpacity style={styles.updateProfileButton} onPress={handleSaveHeightWeight}>
-          <Text style={styles.buttonText}>Save</Text>
-        </TouchableOpacity>
-        <Modal
-    animationType="slide"
-    transparent={true}
-    visible={showConfirmation}
-    onRequestClose={() => {
-      setShowConfirmation(!showConfirmation);
-    }}
->
-  <View style={styles.centeredView}>
-    <View style={styles.modalView}>
-      <Text style={styles.modalText}>Data Saved Successfully!</Text>
-      <Pressable
-        style={[styles.button, styles.buttonClose]}
-        onPress={closeConfirmation}
-      >
-        <Text style={styles.textStyle}>OK</Text>
-      </Pressable>
-    </View>
-  </View>
-</Modal>
-      </>
-    ) : (
-      <Text style={styles.text}>Please </Text>
-    )}
-  </ScrollView>
-);
-};  
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      {user ? (
+        <>
+          <Text style={styles.text}>{`${userName} please update below:`}</Text>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Height(m):</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter height"
+              keyboardType="numeric"
+              value={height ? height.toString() : ''}
+              onChangeText={(text) => setHeight(text)}
+              textAlignVertical="top"
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Weight(kg):</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter weight"
+              keyboardType="numeric"
+              value={weight ? weight.toString() : ''}
+              onChangeText={(text) => setWeight(text)}
+              textAlignVertical="top"
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Sport Speciality:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter Sport Speciality (e.g., Goalkeeper for Soccer)"
+              value={sportSpeciality ? sportSpeciality.toString() : ''}
+              onChangeText={(text) => setSportSpeciality(text)}
+              textAlignVertical="top"
+            />
+          </View>
+          <TouchableOpacity style={styles.updateProfileButton} onPress={handleSaveHeightWeight}>
+            <Text style={styles.buttonText}>Save</Text>
+          </TouchableOpacity>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={showConfirmation}
+            onRequestClose={() => {
+              setShowConfirmation(!showConfirmation);
+            }}
+          >
+            {/* ... (unchanged code) */}
+          </Modal>
+        </>
+      ) : (
+        <Text style={styles.text}>Please </Text>
+      )}
+    </ScrollView>
+  );
+};
+
 
 export default UpdateProfileScreen;
 
@@ -203,31 +171,31 @@ const styles = StyleSheet.create({
     alignItems: 'left',
     justifyContent: 'center',
     padding: 60,
-    paddingTop: 50,
+    paddingTop: 80,
   },
   text: {
     fontFamily: 'Roboto',
-    fontSize: 28,
-    marginBottom: 10,
+    fontSize: 18,
+    marginBottom: 60,
     color: '#051d5f',
   },
   label: {
     fontSize: 18,
-    marginBottom: 5,
+    marginBottom: 50,
     color: '#051d5f',
   },
   inputContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'left',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 30,
     paddingHorizontal: 2,
   },
   input: {
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    marginBottom: 15,
+    marginBottom:40,
     paddingHorizontal: 10,
     flex: 1,
   },
@@ -257,12 +225,4 @@ const styles = StyleSheet.create({
     borderColor: 'red',
     borderWidth: 2,
   },
-  nonEditableInput: {
-    borderWidth: 0,  
-    borderBottomWidth: 0,  
-      
-  },
-  
 });
-
-
