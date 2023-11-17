@@ -74,7 +74,6 @@ const Player_input = ({ navigation }) => {
   const [userComment , setComment] = useState('');
   const [duration , setDuration] = useState('');
   const [trainingloads , setLoads] = useState('');
-  
 
   const [dateandtime, setDatandtime] = useState(new Date());
 
@@ -105,11 +104,32 @@ const Player_input = ({ navigation }) => {
   }, [user]);
 
 
+  const isSurveyComplete = () => {
+    // Check if all required fields are filled
+    return (
+      heartRate == '' ||
+      hoursOfSleep == '' ||
+      qualityOfSleep == '' ||
+      rpe == '' ||
+      mentalhealthscale == '' ||
+      painScale == '' ||
+      duration == '' ||
+      trainingloads == '' ||
+      physicalwellness == '' ||
+      userComment == ''
+    );
+  };
   const handleClick = async () => {
     if (!user) {
       console.error('User not Authenticated');
       return;
     }
+    if (isSurveyComplete()) {
+      alert('Please complete the entire survey before saving.');
+      return ;
+    }
+    
+
   try {
     get(userSurveyRef)
     .then((snapshot) => {
@@ -141,7 +161,8 @@ const Player_input = ({ navigation }) => {
       console.error('Error saving data to the Realtime Database:', error);
     });
     });
-  } catch (error) {
+  } 
+  catch (error) {
   console.error('Error saving data to the Realtime Database:', error);
   }
 
@@ -279,13 +300,13 @@ const styles = StyleSheet.create({
   ratingOption: {
     width: 40,
     height: 40,
-    borderRadius: 15,
+    borderRadius: 25,
     borderColor: 'gray',
     borderWidth: 2,
     alignItems: 'center',
-    justifyContent: 'left',
-    marginHorizontal: 0.75,
-    marginBottom: 1,
+    justifyContent: 'center',
+    marginHorizontal:1,
+    marginBottom: 2,
   },
   selectedRatingOption: {
     borderColor: 'gold',
