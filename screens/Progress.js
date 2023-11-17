@@ -63,6 +63,7 @@ const ProgressScreen = ({ navigation }) => {
   const [RPEdata, setData2] = useState([]);
   const [data3, setData3] = useState([]);
   const [Duration, setDuration] = useState([]);
+  const [ACWRList, setACWRLIst] = useState('');
   //const [data4, setData4] = useState([]);
   const userA = auth.currentUser;
   const userSurveyRef = ref(db, `DataToPlot/${userA.uid}`);
@@ -76,6 +77,7 @@ const ProgressScreen = ({ navigation }) => {
           setData2(dataFromFirebase.rpe || '');
           setData3(dataFromFirebase.painScale || '');
           setDuration(dataFromFirebase.duration || '');
+          setACWRLIst(dataFromFirebase.rpe || '');
           console.log("We fetched")
           //setData4(dataFromFirebase.mentalhealthscale || '');
         }
@@ -109,6 +111,21 @@ const ProgressScreen = ({ navigation }) => {
     if (acwr !== null) {
     console.log(`Adjusted ACWR: ${acwr.toFixed(2)}`);
     setACWR(acwr);
+    get(userSurveyRef)
+    .then((snapshot) => {
+      const data = snapshot.val() || {};
+      data.ACWRVal = data.ACWRVal || [];
+      data.ACWRVal.push(acwr);
+      set(userSurveyRef, data)
+    .then(() => {
+      console.log('Data saved to the Realtime Database');
+     // alert('Data has been saved');
+      //navigation.navigate('Player');
+    })
+    .catch((error) => {
+      console.error('Error saving data to the Realtime Database:', error);
+    });
+    });
     } else {
       console.log("Unable to calculate ACWR. Please check input values.");
     }
