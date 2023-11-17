@@ -12,13 +12,15 @@ const CoachProfile = () => {
   const handleAddClub = () => {
     navigation.navigate('AddClub'); // Navigate to the AddClub screen
   };
+
   const auth = getAuth();
   const user = auth.currentUser;
+
   useEffect(() => {
     // Get a reference to the database
     const db = getDatabase();
 
-    // Replace 'yourUserId' with the actual user ID of the coach
+    //The actual user ID of the coach
     const userId =  user.uid;
 
     // Get a reference to the user's clubs
@@ -53,7 +55,7 @@ const CoachProfile = () => {
           key={club.id}
           style={styles.clubContainer}
           onPress={() => {
-            navigation.navigate('ClubProfile')
+            navigation.navigate('ClubProfile', { clubId: club.id });
             // Handle club click (e.g., navigate to club details screen)
           }}>
           <Text style={styles.clubName}>{club.name}</Text>
@@ -106,11 +108,10 @@ const styles = StyleSheet.create({
   addButton: {
     position: 'absolute',
     bottom: 20,
-    left: 20,
     backgroundColor: '#2e64e5',
     padding: 15,
     borderRadius: 5,
-    width: '100%',
+    width: '90%',
   },
   addButtonLabel: {
     fontSize: 18,

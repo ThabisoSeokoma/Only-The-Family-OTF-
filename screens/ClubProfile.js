@@ -4,12 +4,12 @@ import { useNavigation } from '@react-navigation/native';
 import { getDatabase, ref, onValue } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
 
-const ClubProfile = () => {
+const ClubProfile = ({route}) => {
   const navigation = useNavigation();
   const [players, setPlayers] = useState([]);
   const [playerDetails, setPlayerDetails] = useState({});
 
-  const [clubId, setClubId] = useState('');
+  const { clubId } = route.params; 
 
   const handleAddPlayer = () => {
     navigation.navigate('AddPlayer', { clubId: clubId });
@@ -26,49 +26,26 @@ const ClubProfile = () => {
   const auth = getAuth();
   const user = auth.currentUser;
 
-  //const playerIdPath = 'Athletes/${athlete.uid}/';
-
-
   useEffect(() => {
     const db = getDatabase();
     const userId = user.uid;
-    const clubIdPath = `Managements/${user.uid}/clubs`; 
-    const userClubsRef = ref(db, clubIdPath);
-    onValue(userClubsRef, (snapshot) => {
-      const clubData = snapshot.val();
+    const clubPlayersRef = ref(db, `Managements/${userId}/clubs/${clubId}/club_players`);
 
-      if (clubData) {
-        // Assuming clubData is an object with club IDs as keys, get the first club ID
-        const firstClubId = Object.keys(clubData)[0];
-        setClubId(firstClubId); // Set the clubId state with the first club ID
+    onValue(clubPlayersRef, (playersSnapshot) => {
+      const playersData = playersSnapshot.val();
 
-        // Now, you can use the clubId to fetch club players
-        const clubPlayersRef = ref(db, `Managements/${user.uid}/clubs/${firstClubId}/club_players`);
-
-        // Listen for changes in the club players data
-        onValue(clubPlayersRef, (playersSnapshot) => {
-          const playersData = playersSnapshot.val();
-
-          if (playersData) {
-            // Convert the playersData object into an array of players
-            const playersArray = Object.keys(playersData).map((playerId) => ({
-              id: playerId,
-              ...playersData[playerId],
-            }));
-
-            // Update the players state with the fetched players
-            setPlayers(playersArray);
-          } else {
-            // Handle case when no players are found
-            console.log('No players found for this club.');
-          }
-        });
+      if (playersData) {
+        const playersArray = Object.keys(playersData).map((playerId) => ({
+          id: playerId,
+          ...playersData[playerId],
+        }));
+        setPlayers(playersArray);
       } else {
-        // Handle case when no clubs are found
-        console.log('No clubs found for this user.');
+        console.log('No players found for this club.');
+        setPlayers([]);
       }
     });
-  }, []);
+  }, [clubId]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -100,7 +77,7 @@ const ClubProfile = () => {
         style={styles.setButton}
         onPress={handlelimits}>
         <Text style={styles.addButtonLabel}>
-          set club constraints
+          Set Club Constraints
         </Text>
       </TouchableOpacity>
     </ScrollView>
@@ -152,11 +129,11 @@ const styles = StyleSheet.create({
       setButton: {
         position: 'absolute',
         bottom: 20,
-        right: 8,
+        right: 10,
         backgroundColor: '#2e64e5',
         padding: 15,
         borderRadius: 5,
-        width: '48%',
+        width: '45%',
       },
       addButtonLabel: {
         fontSize: 18,
